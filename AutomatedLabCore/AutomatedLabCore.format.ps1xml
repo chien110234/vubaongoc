@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+  <ViewDefinitions>
+
+    <View>
+      <Name>AutomatedLab.ValidationMessage</Name>
+      <ViewSelectedBy>
+        <TypeName>AutomatedLab.ValidationMessage</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <AutoSize />
+        <TableHeaders>
+          <TableColumnHeader>
+            <Label>Type</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Message</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>TargetObject</Label>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>Type</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Message</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>TargetObject</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
+    <View>
+      <Name>AutomatedLab.Lab</Name>
+      <ViewSelectedBy>
+        <TypeName>AutomatedLab.Lab</TypeName>
+      </ViewSelectedBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+
+              <Frame>
+                <LeftIndent>4</LeftIndent>
+                <CustomItem>
+
+                  <Text>Lab Name: </Text>
+                  <ExpressionBinding>
+                    <PropertyName>Name</PropertyName>
+                  </ExpressionBinding>
+                  <ExpressionBinding>
+                    <ScriptBlock>" ($($_.DefaultVirtualizationEngine))"</ScriptBlock>
+                  </ExpressionBinding>
+
+                  <NewLine />
+                  <NewLine />
+                </CustomItem>
+              </Frame>
+
+              <Frame>
+                <LeftIndent>8</LeftIndent>
+                <CustomItem>
+                  <Text>LabFilePath: </Text>
+                  <ExpressionBinding>
+                    <PropertyName>LabFilePath</PropertyName>
+                  </ExpressionBinding>
+                  <NewLine />
+
+                  <Text>VM Path: </Text>
+                  <ExpressionBinding>
+                    <ScriptBlock>$_.Target.Path</ScriptBlock>
+                  </ExpressionBinding>
+                  <NewLine />
+                  <NewLine />
+
+                  <Text>Machines: </Text>
+                  <ExpressionBinding>
+                    <ScriptBlock>$_.Machines.Count</ScriptBlock>
+                  </ExpressionBinding>
+                  <NewLine />
+
+                  <Text>Domains:  </Text>
+                  <ExpressionBinding>
+                    <ScriptBlock>$_.Domains.Count</ScriptBlock>
+                  </ExpressionBinding>
+                  <NewLine />
+
+                  <Text>Networks: </Text>
+                  <ExpressionBinding>
+                    <ScriptBlock>$_.VirtualNetworks.Count</ScriptBlock>
+                  </ExpressionBinding>
+                  <NewLine />
+
+                </CustomItem>
+              </Frame>
+
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
+
+    <View>
+      <Name>AutomatedLab.Machine</Name>
+      <ViewSelectedBy>
+        <TypeName>AutomatedLab.Machine</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <AutoSize />
+        <TableHeaders>
+          <TableColumnHeader>
+            <Label>Name</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>DomainName</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Ip Address</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Roles</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>PostInstall</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Disks</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>OS</Label>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>Name</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>DomainName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>IpV4Address</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Roles</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>PostInstallationActivity</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Disks</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  [string]::Format('{0} ({1})', $_.OperatingSystem.OperatingSystemName, $_.OperatingSystem.Version)
+                </ScriptBlock>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
+    <View>
+      <Name>AutomatedLab.OperatingSystem</Name>
+      <ViewSelectedBy>
+        <TypeName>AutomatedLab.OperatingSystem</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <AutoSize />
+        <TableHeaders>
+          <TableColumnHeader>
+            <Label>OperatingSystemName</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Idx</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Arch</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Version</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>PublishedDate</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>IsoPath</Label>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>OperatingSystemName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>ImageIndex</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Architecture</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Version</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>PublishedDate</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>IsoPath</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
+    <View>
+      <Name>AutomatedLab.IsoImage</Name>
+      <ViewSelectedBy>
+        <TypeName>AutomatedLab.IsoImage</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <AutoSize />
+        <TableHeaders>
+          <TableColumnHeader>
+            <Label>Name</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Size</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>OS Count</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Path</Label>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>Name</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  [string]::Format('{0:N2}' -f $_.Size)
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  $_.OperatingSystems.Count
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Path</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
+    <View>
+      <Name>AutomatedLab.Azure.AzureRmService</Name>
+      <ViewSelectedBy>
+        <TypeName>AutomatedLab.Azure.AzureRmService</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <AutoSize />
+        <TableHeaders>
+          <TableColumnHeader>
+            <Label>SiteName</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>State</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Plan</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>ResourceGroup</Label>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>SiteName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>State</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  ($_.ServerFarmId -split '/')[-1]
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>ResourceGroup</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
+    <View>
+      <Name>AutomatedLab.Azure.AzureRmResourceGroup</Name>
+      <ViewSelectedBy>
+        <TypeName>AutomatedLab.Azure.AzureRmResourceGroup</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <AutoSize />
+        <TableHeaders>
+          <TableColumnHeader>
+            <Label>Name</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Location</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>ProvisioningState</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Tags</Label>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>ResourceGroupName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Location</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>ProvisioningState</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Tags</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
+  </ViewDefinitions>
+</Configuration>

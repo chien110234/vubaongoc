@@ -1,0 +1,1520 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+  <?include Includes.wxi ?>
+  <Product
+    Name='AutomatedLab'
+    Id='*'
+    UpgradeCode='6a52c22c-74f0-4cc3-b723-b73a21db9149'
+    Language='1033'
+    Codepage='1252'
+    Version="$(var.AutomatedLabProductVersion)"
+    Manufacturer='AutomatedLab Team'>
+    <Package Id='*' Keywords='Installer' Description="AutomatedLab Installer" Comments='AutomatedLab Modules Installer' Manufacturer='AutomatedLabTeam' InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252' InstallScope='perMachine' />
+    <Property Id='LABSOURCESDIR'>
+      <RegistrySearch Id='LabSourcesDirRegSearch' Root='HKLM' Key='SOFTWARE\[Manufacturer]\[ProductName]' Name='LabSourcesFolder' Type='raw' />
+    </Property>
+    <Property Id="POWERSHELLEXE">
+      <RegistrySearch Id="POWERSHELLEXE"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell"
+                      Name="Path" />
+    </Property>
+    <Condition Message="This application requires Windows PowerShell.">
+      <![CDATA[Installed OR POWERSHELLEXE]]>
+    </Condition>
+
+    <MajorUpgrade MigrateFeatures='yes' AllowSameVersionUpgrades='yes' DowngradeErrorMessage='A newer version of [ProductName] is already installed. If you are sure you want to downgrade, remove the existing installation via Programs and Features.'/>
+    <Media Id='1' CompressionLevel='high' Cabinet='AutomatedLab.cab' EmbedCab='yes' />
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id="ProgramFiles64Folder" Name="ProgramFilesFolder">
+        <Directory Id="WindowsPowerShell" Name="WindowsPowerShell">
+          <Directory Id="INSTALLDIR" Name="Modules">
+          </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="InstallFolder_ProgramData" Name="ProgramData">
+        <Directory Id="InstallFolder_ProgramDataAutomatedLab" Name="AutomatedLab">
+          <Directory Id="InstallFolder_ProgramDataAssets" Name="Assets">
+            <Component Id="AutomatedLabAssets" Guid="d3d29a38-766a-4a81-9a11-285d8764d89d">
+              <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Type="string" Value="ALAssets"/>
+              <File Source="$(var.SolutionDir)Assets\Automated-Lab_icon512.png" />
+              <File Source="$(var.SolutionDir)Assets\ProductKeys.xml" />
+              <RemoveFolder Id="RemoveFolderAssets" Directory="InstallFolder_ProgramDataAssets" On="both"/>
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="LABSOURCESVOLUME">
+        <Directory Id="LABSOURCESDIR" Name="LabSources">
+          <Directory Id="SAMPLESDIR" Name="SampleScripts">
+            <Component Id='SamplesComponent' Guid='bd0eb8dc-b958-4b43-b767-53010f4aa713'>
+              <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Type="string" Value="SamplesComponent" />
+              <RemoveFolder Id="RemoveFolderSamplesDir" Directory="SAMPLESDIR" On="both"/>
+            </Component>
+            <Directory Id="SamplesHypervDir" Name="HyperV">
+              <Component Id='SamplesHypervComponent' Guid='c3b77aa7-5024-4be3-b82c-a742b6bc203c'>
+                <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Type="string" Value="SamplesHypervComponent"/>
+                <RemoveFolder Id="RemoveFolderSamplesHypervDir" Directory="SamplesHypervDir" On="both"/>
+              </Component>
+            </Directory>
+            <Directory Id="SamplesAzureDir" Name="Azure">
+              <Component Id='SamplesAzureComponent' Guid='2904ea2b-6964-47ba-b912-f4c47b1cd6a4'>
+                <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Type="string" Value="SamplesAzureComponent"/>
+                <RemoveFolder Id="RemoveFolderSamplesAzureDir" Directory="SamplesAzureDir" On="both"/>
+              </Component>
+            </Directory>
+            <Directory Id="SAMPLESWORKSHOPSDIR" Name="Workshops">
+              <Component Id='SamplesWorkshopComponent' Guid='09b8b205-a1a4-4038-8b82-db45356e511f'>
+                <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Type="string" Value="SamplesWorkshopComponent"/>
+                <RemoveFolder Id="RemoveFolderSAMPLESWORKSHOPSDIR" Directory="SAMPLESWORKSHOPSDIR" On="both"/>
+              </Component>
+            </Directory>
+            <Directory Id="SAMPLESSCENARIOSDIR" Name="Scenarios">
+              <Component Id='SamplesScenariosComponent' Guid='973e631b-bb24-4634-83ae-28a53ace65bf'>
+                <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Type="string" Value="SamplesScenariosComponent"/>
+                <RemoveFolder Id="RemoveFolderSAMPLESSCENARIOSDIR" Directory="SAMPLESSCENARIOSDIR" On="both"/>
+              </Component>
+            </Directory>
+            <Directory Id="SAMPLESINSTRODUCTIONDIR" Name="Introduction">
+              <Component Id='SamplesIntroductionComponent' Guid='42526be0-5995-4cff-bf97-5949c26c1288'>
+                <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Type="string" Value="SamplesIntroductionComponent"/>
+                <RemoveFolder Id="RemoveFolderSAMPLESINSTRODUCTIONDIR" Directory="SAMPLESINSTRODUCTIONDIR" On="both"/>
+              </Component>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+    <SetDirectory Id="LABSOURCESVOLUME" Value="C:\" />
+    <SetDirectory Id="InstallFolder_ProgramData" Value="[WindowsVolume]ProgramData" />
+    <Feature Id='Complete' Title='AutomatedLab' Description='The complete package.' Display='expand' Level='1'>
+      <Feature Id='Modules' Title='Modules' Description='AutomatedLab PowerShell Modules' Level='1'>
+        <ComponentRef Id='AutomatedLabAssets'/>
+      </Feature>
+      <Feature Id='LabSources' Title='Lab Sources' Description='Creates a folder structure that all samples scripts are based on and provides some lab preparation scripts.' Level='1' ConfigurableDirectory='LABSOURCESDIR'>
+        <ComponentGroupRef Id='LabSourcesComponentGroup'/>
+        <Component Id="LabSourcesFolderRegistry" Directory='LABSOURCESDIR'>
+          <RegistryValue Root='HKLM' Key='SOFTWARE\[Manufacturer]\[ProductName]' Name='LabSourcesFolder' Value='[LABSOURCESDIR]' Type='string' KeyPath="yes" />
+        </Component>
+        <Feature Id='Samples' Title='SampleScripts' Description='A list of sample scripts.' Level='1' ConfigurableDirectory='SAMPLESDIR'>
+          <ComponentRef Id='SamplesComponent' />
+          <ComponentRef Id='SamplesHypervComponent' />
+          <ComponentRef Id='SamplesAzureComponent' />
+          <ComponentRef Id='SamplesWorkshopComponent' />
+          <ComponentRef Id='SamplesScenariosComponent' />
+          <ComponentRef Id='SamplesIntroductionComponent' />
+        </Feature>
+      </Feature>
+    </Feature>
+    <UI>
+      <UIRef Id="UI_Texts" />
+      <Property Id="DefaultUIFont">DlgFont8</Property>
+      <Property Id="ErrorDialog">ErrorDlg</Property>
+      <Dialog Id="PrepareDlg" Width="370" Height="270" Title="[ProductName] [ProductVersion] [Setup]" Modeless="yes">
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+        <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="[DialogBitmap]" />
+        <Control Id="ActionText" Type="Text" X="135" Y="100" Width="220" Height="20" Transparent="yes" NoPrefix="yes">
+          <Subscribe Event="ActionText" Attribute="Text" />
+        </Control>
+        <Control Id="Description" Type="Text" X="135" Y="70" Width="220" Height="20" Transparent="yes" NoPrefix="yes">
+          <Text>Please wait while the [Wizard] prepares to guide you through the installation.</Text>
+        </Control>
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Disabled="yes" TabSkip="yes" Text="[ButtonText_Next]" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" TabSkip="yes" Text="[ButtonText_Back]" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
+          <Text>{\VerdanaBold13}Welcome to the [ProductName] [ProductVersion] [Wizard]</Text>
+        </Control>
+        <Control Id="ActionData" Type="Text" X="135" Y="125" Width="220" Height="30" Transparent="yes" NoPrefix="yes">
+          <Subscribe Event="ActionData" Attribute="Text" />
+        </Control>
+      </Dialog>
+      <Dialog Id="ProgressDlg" Width="370" Height="270" Title="[ProductName] [ProductVersion] [Setup]" Modeless="yes">
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Back]" />
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Next]" />
+        <Control Id="ActionText" Type="Text" X="70" Y="100" Width="265" Height="10">
+          <Subscribe Event="ActionText" Attribute="Text" />
+        </Control>
+        <Control Id="Text" Type="Text" X="35" Y="65" Width="300" Height="20">
+          <Text>Please wait while the [Wizard] [Progress2] [ProductName]. This may take several minutes.</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="20" Y="15" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}[Progress1] [ProductName]</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="ProgressBar" Type="ProgressBar" X="35" Y="115" Width="300" Height="10" ProgressBlocks="yes" Text="Progress done">
+          <Subscribe Event="SetProgress" Attribute="Progress" />
+        </Control>
+        <Control Id="StatusLabel" Type="Text" X="35" Y="100" Width="35" Height="10" Text="Status:" />
+      </Dialog>
+      <Dialog Id="UserExit" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="Finish" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_Finish]">
+          <Publish Event="EndDialog" Value="Exit">1</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Cancel]" />
+        <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="[DialogBitmap]" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Back]" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
+          <Text>{\VerdanaBold13}[ProductName] [Wizard] was interrupted</Text>
+        </Control>
+        <Control Id="Description1" Type="Text" X="135" Y="70" Width="220" Height="40" Transparent="yes" NoPrefix="yes">
+          <Text>[ProductName] setup was interrupted. Your system has not been modified. To install this program at a later time, please run the installation again.</Text>
+        </Control>
+        <Control Id="Description2" Type="Text" X="135" Y="115" Width="220" Height="20" Transparent="yes" NoPrefix="yes">
+          <Text>Click the Finish button to exit the [Wizard].</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="FatalError" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="Finish" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_Finish]">
+          <Publish Event="EndDialog" Value="Exit">1</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Cancel]" />
+        <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="[DialogBitmap]" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Back]" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
+          <Text>{\VerdanaBold13}[ProductName] [Wizard] ended prematurely</Text>
+        </Control>
+        <Control Id="Description1" Type="Text" X="135" Y="70" Width="220" Height="40" Transparent="yes" NoPrefix="yes">
+          <Text>[ProductName] setup ended prematurely because of an error. Your system has not been modified. To install this program at a later time, please run the installation again.</Text>
+        </Control>
+        <Control Id="Description2" Type="Text" X="135" Y="115" Width="220" Height="20" Transparent="yes" NoPrefix="yes">
+          <Text>Click the Finish button to exit the [Wizard].</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="ExitDialog" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="Finish" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_Finish]">
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Cancel]" />
+        <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="[DialogBitmap]" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Back]" />
+        <Control Id="Description" Type="Text" X="135" Y="70" Width="220" Height="20" Transparent="yes" NoPrefix="yes">
+          <Text>Click the Finish button to exit the [Wizard].</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
+          <Text>{\VerdanaBold13}Completing the [ProductName] [Wizard]</Text>
+        </Control>
+        <!--<Control Id="Launch" Type="CheckBox" X="135" Y="120" Width="150" Height="17" Property='LAUNCHPRODUCT' CheckBoxValue='1'><Text>Launch [ProductName]</Text></Control>-->
+      </Dialog>
+      <Dialog Id="AdminBrowseDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="PathEdit" Type="PathEdit" X="84" Y="202" Width="261" Height="17" Property="TARGETDIR" />
+        <Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_OK]">
+          <Publish Event="SetTargetPath" Value="TARGETDIR">1</Publish>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="240" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="Reset" Value="0">1</Publish>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="ComboLabel" Type="Text" X="25" Y="58" Width="44" Height="10" TabSkip="no" Text="&amp;Look in:" />
+        <Control Id="DirectoryCombo" Type="DirectoryCombo" X="70" Y="55" Width="220" Height="80" Property="TARGETDIR" Removable="yes" Fixed="yes" Remote="yes">
+          <Subscribe Event="IgnoreChange" Attribute="IgnoreChange" />
+        </Control>
+        <Control Id="Up" Type="PushButton" X="298" Y="55" Width="19" Height="19" ToolTip="Up One Level" Icon="yes" FixedSize="yes" IconSize="16" Text="Up">
+          <Publish Event="DirectoryListUp" Value="0">1</Publish>
+        </Control>
+        <Control Id="NewFolder" Type="PushButton" X="325" Y="55" Width="19" Height="19" ToolTip="Create A New Folder" Icon="yes" FixedSize="yes" IconSize="16" Text="New">
+          <Publish Event="DirectoryListNew" Value="0">1</Publish>
+        </Control>
+        <Control Id="DirectoryList" Type="DirectoryList" X="25" Y="83" Width="320" Height="110" Property="TARGETDIR" Sunken="yes" TabSkip="no" />
+        <Control Id="PathLabel" Type="Text" X="25" Y="205" Width="59" Height="10" TabSkip="no" Text="&amp;Folder name:" />
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>Browse to the destination folder</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}Change current destination folder</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+      </Dialog>
+      <Dialog Id="BrowseDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="PathEdit" Type="PathEdit" X="84" Y="202" Width="261" Height="18" Property="_BrowseProperty" Indirect="yes" />
+        <Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_OK]">
+          <Publish Event="SetTargetPath" Value="[_BrowseProperty]">1</Publish>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="240" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="Reset" Value="0">1</Publish>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="ComboLabel" Type="Text" X="25" Y="58" Width="44" Height="10" TabSkip="no" Text="&amp;Look in:" />
+        <Control Id="DirectoryCombo" Type="DirectoryCombo" X="70" Y="55" Width="220" Height="80" Property="_BrowseProperty" Indirect="yes" Fixed="yes" Remote="yes">
+          <Subscribe Event="IgnoreChange" Attribute="IgnoreChange" />
+        </Control>
+        <Control Id="Up" Type="PushButton" X="298" Y="55" Width="19" Height="19" ToolTip="Up One Level" Icon="yes" FixedSize="yes" IconSize="16" Text="Up">
+          <Publish Event="DirectoryListUp" Value="0">1</Publish>
+        </Control>
+        <Control Id="NewFolder" Type="PushButton" X="325" Y="55" Width="19" Height="19" ToolTip="Create A New Folder" Icon="yes" FixedSize="yes" IconSize="16" Text="New">
+          <Publish Event="DirectoryListNew" Value="0">1</Publish>
+        </Control>
+        <Control Id="DirectoryList" Type="DirectoryList" X="25" Y="83" Width="320" Height="110" Property="_BrowseProperty" Sunken="yes" Indirect="yes" TabSkip="no" />
+        <Control Id="PathLabel" Type="Text" X="25" Y="205" Width="59" Height="10" TabSkip="no" Text="&amp;Folder name:" />
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>Browse to the destination folder</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}Change current destination folder</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+      </Dialog>
+      <Dialog Id="CancelDlg" Width="260" Height="85" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="No" Type="PushButton" X="132" Y="57" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_No]">
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="Yes" Type="PushButton" X="72" Y="57" Width="56" Height="17" Text="[ButtonText_Yes]">
+          <Publish Event="EndDialog" Value="Exit">1</Publish>
+        </Control>
+        <Control Id="Text" Type="Text" X="48" Y="15" Width="194" Height="30">
+          <Text>Are you sure you want to cancel [ProductName] installation?</Text>
+        </Control>
+        <Control Id="Icon" Type="Icon" X="15" Y="15" Width="24" Height="24" ToolTip="Information icon" FixedSize="yes" IconSize="32" Text="[InfoIcon]" />
+      </Dialog>
+      <Dialog Id="CustomizeDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes" TrackDiskSpace="yes">
+        <Control Id="Tree" Type="SelectionTree" X="25" Y="85" Width="175" Height="95" Property="_BrowseProperty" Sunken="yes" TabSkip="no" Text="Tree of selections" />
+        <Control Id="Browse" Type="PushButton" X="304" Y="200" Width="56" Height="17" Text="[ButtonText_Browse]">
+          <Publish Event="SelectionBrowse" Value="BrowseDlg">1</Publish>
+          <Condition Action="hide">Installed</Condition>
+        </Control>
+        <Control Id="Reset" Type="PushButton" X="42" Y="243" Width="56" Height="17" Text="[ButtonText_Reset]">
+          <Publish Event="Reset" Value="0">1</Publish>
+          <Subscribe Event="SelectionNoItems" Attribute="Enabled" />
+        </Control>
+        <Control Id="DiskCost" Type="PushButton" X="111" Y="243" Width="56" Height="17">
+          <Text>Disk &amp;Usage</Text>
+          <Publish Event="SpawnDialog" Value="DiskCostDlg">1</Publish>
+          <Subscribe Event="SelectionNoItems" Attribute="Enabled" />
+        </Control>
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
+          <Publish Event="NewDialog" Value="MaintenanceTypeDlg">
+            <![CDATA[InstallMode = "Change"]]>
+          </Publish>
+          <Publish Event="NewDialog" Value="SetupTypeDlg">
+            <![CDATA[InstallMode = "Custom"]]>
+          </Publish>
+        </Control>
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Next]">
+          <Publish Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+          <Subscribe Event="SelectionNoItems" Attribute="Enabled" />
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>Select the way you want features to be installed.</Text>
+        </Control>
+        <Control Id="Text" Type="Text" X="25" Y="55" Width="320" Height="20">
+          <Text>Click on the icons in the tree below to change the way features will be installed.</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}Custom Setup</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="Box" Type="GroupBox" X="210" Y="81" Width="140" Height="98" />
+        <Control Id="ItemDescription" Type="Text" X="215" Y="90" Width="131" Height="30">
+          <Text>Multiline description of the currently selected item.</Text>
+          <Subscribe Event="SelectionDescription" Attribute="Text" />
+        </Control>
+        <Control Id="ItemSize" Type="Text" X="215" Y="130" Width="131" Height="45">
+          <Text>The size of the currently selected item.</Text>
+          <Subscribe Event="SelectionSize" Attribute="Text" />
+        </Control>
+        <Control Id="Location" Type="Text" X="75" Y="200" Width="215" Height="20">
+          <Text>&lt;The selection's path&gt;</Text>
+          <Subscribe Event="SelectionPath" Attribute="Text" />
+          <Subscribe Event="SelectionPathOn" Attribute="Visible" />
+          <Condition Action="hide">Installed</Condition>
+        </Control>
+        <Control Id="LocationLabel" Type="Text" X="25" Y="200" Width="50" Height="10" Text="Location:">
+          <Subscribe Event="SelectionPathOn" Attribute="Visible" />
+          <Condition Action="hide">Installed</Condition>
+        </Control>
+      </Dialog>
+      <Dialog Id="DiskCostDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_OK]">
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Description" Type="Text" X="20" Y="20" Width="280" Height="20" Transparent="yes" NoPrefix="yes">
+          <Text>The disk space required for the installation of the selected features.</Text>
+        </Control>
+        <Control Id="Text" Type="Text" X="20" Y="53" Width="330" Height="40">
+          <Text>The highlighted volumes (if any) do not have enough disk space available for the currently selected features. You can either remove some files from the highlighted volumes, or choose to install less features onto local drive(s), or select different destination drive(s).</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}Disk Space Requirements</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="VolumeList" Type="VolumeCostList" X="20" Y="100" Width="330" Height="120" Sunken="yes" Fixed="yes" Remote="yes">
+          <Text>{120}{70}{70}{70}{70}</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="ErrorDlg" Width="270" Height="105" Title="Installer Information" ErrorDialog="yes" NoMinimize="yes">
+        <Control Id="ErrorText" Type="Text" X="48" Y="15" Width="205" Height="60" TabSkip="no" Text="Information text" />
+        <Control Id="Y" Type="PushButton" X="100" Y="80" Width="56" Height="17" TabSkip="yes" Text="[ButtonText_Yes]">
+          <Publish Event="EndDialog" Value="ErrorYes">1</Publish>
+        </Control>
+        <Control Id="A" Type="PushButton" X="100" Y="80" Width="56" Height="17" TabSkip="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="EndDialog" Value="ErrorAbort">1</Publish>
+        </Control>
+        <Control Id="C" Type="PushButton" X="100" Y="80" Width="56" Height="17" TabSkip="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="EndDialog" Value="ErrorCancel">1</Publish>
+        </Control>
+        <Control Id="ErrorIcon" Type="Icon" X="15" Y="15" Width="24" Height="24" ToolTip="Information icon" FixedSize="yes" IconSize="32" Text="[InfoIcon]" />
+        <Control Id="I" Type="PushButton" X="100" Y="80" Width="56" Height="17" TabSkip="yes" Text="[ButtonText_Ignore]">
+          <Publish Event="EndDialog" Value="ErrorIgnore">1</Publish>
+        </Control>
+        <Control Id="N" Type="PushButton" X="100" Y="80" Width="56" Height="17" TabSkip="yes" Text="[ButtonText_No]">
+          <Publish Event="EndDialog" Value="ErrorNo">1</Publish>
+        </Control>
+        <Control Id="O" Type="PushButton" X="100" Y="80" Width="56" Height="17" TabSkip="yes" Text="[ButtonText_OK]">
+          <Publish Event="EndDialog" Value="ErrorOk">1</Publish>
+        </Control>
+        <Control Id="R" Type="PushButton" X="100" Y="80" Width="56" Height="17" TabSkip="yes" Text="[ButtonText_Retry]">
+          <Publish Event="EndDialog" Value="ErrorRetry">1</Publish>
+        </Control>
+      </Dialog>
+      <Dialog Id="FilesInUse" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes" KeepModeless="yes">
+        <Control Id="Retry" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_Retry]">
+          <Publish Event="EndDialog" Value="Retry">1</Publish>
+        </Control>
+        <Control Id="Ignore" Type="PushButton" X="235" Y="243" Width="56" Height="17" Text="[ButtonText_Ignore]">
+          <Publish Event="EndDialog" Value="Ignore">1</Publish>
+        </Control>
+        <Control Id="Exit" Type="PushButton" X="166" Y="243" Width="56" Height="17" Text="[ButtonText_Exit]">
+          <Publish Event="EndDialog" Value="Exit">1</Publish>
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Description" Type="Text" X="20" Y="23" Width="280" Height="20" Transparent="yes" NoPrefix="yes">
+          <Text>Some files that need to be updated are currently in use.</Text>
+        </Control>
+        <Control Id="Text" Type="Text" X="20" Y="55" Width="330" Height="30">
+          <Text>The following applications are using files that need to be updated by this setup. Close these applications and then click Retry to continue the installation or Cancel to exit it.</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}Files in Use</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="List" Type="ListBox" X="20" Y="87" Width="330" Height="130" Property="FileInUseProcess" Sunken="yes" TabSkip="yes" />
+      </Dialog>
+      <Dialog Id="MaintenanceTypeDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="ChangeLabel" Type="Text" X="105" Y="65" Width="100" Height="10" TabSkip="no">
+          <Text>{\DlgTitleFont}&amp;Modify</Text>
+        </Control>
+        <Control Id="ChangeButton" Type="PushButton" X="50" Y="65" Width="38" Height="38" ToolTip="Modify Installation" Default="yes" Icon="yes" FixedSize="yes" IconSize="32" Text="[CustomSetupIcon]">
+          <Publish Property="InstallMode" Value="Change">1</Publish>
+          <Publish Property="Progress1" Value="Changing">1</Publish>
+          <Publish Property="Progress2" Value="changes">1</Publish>
+          <Publish Event="NewDialog" Value="CustomizeDlg">1</Publish>
+        </Control>
+        <Control Id="RepairLabel" Type="Text" X="105" Y="114" Width="100" Height="10" TabSkip="no">
+          <Text>{\DlgTitleFont}Re&amp;pair</Text>
+        </Control>
+        <Control Id="RepairButton" Type="PushButton" X="50" Y="114" Width="38" Height="38" ToolTip="Repair Installation" Icon="yes" FixedSize="yes" IconSize="32" Text="[RepairIcon]">
+          <Publish Property="InstallMode" Value="Repair">1</Publish>
+          <Publish Property="Progress1" Value="Repairing">1</Publish>
+          <Publish Property="Progress2" Value="repaires">1</Publish>
+          <Publish Event="NewDialog" Value="VerifyRepairDlg">1</Publish>
+        </Control>
+        <Control Id="RemoveLabel" Type="Text" X="105" Y="163" Width="100" Height="10" TabSkip="no">
+          <Text>{\DlgTitleFont}&amp;Remove</Text>
+        </Control>
+        <Control Id="RemoveButton" Type="PushButton" X="50" Y="163" Width="38" Height="38" ToolTip="Remove Installation" Icon="yes" FixedSize="yes" IconSize="32" Text="[RemoveIcon]">
+          <Publish Property="InstallMode" Value="Remove">1</Publish>
+          <Publish Property="Progress1" Value="Removing">1</Publish>
+          <Publish Property="Progress2" Value="removes">1</Publish>
+          <Publish Event="NewDialog" Value="VerifyRemoveDlg">1</Publish>
+        </Control>
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
+          <Publish Event="NewDialog" Value="MaintenanceWelcomeDlg">1</Publish>
+        </Control>
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Next]" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="20" Transparent="yes" NoPrefix="yes">
+          <Text>Select the operation you wish to perform.</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="240" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}Modify, Repair or Remove installation</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="ChangeText" Type="Text" X="105" Y="78" Width="230" Height="20">
+          <Text>Allows users to change the way features are installed.</Text>
+        </Control>
+        <Control Id="RemoveText" Type="Text" X="105" Y="176" Width="230" Height="20">
+          <Text>Removes [ProductName] [ProductVersion] from your computer.</Text>
+        </Control>
+        <Control Id="RepairText" Type="Text" X="105" Y="127" Width="230" Height="30">
+          <Text>Repairs errors in the most recent installation state - fixes missing or corrupt files, shortcuts and registry entries.</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="MaintenanceWelcomeDlg" Width="370" Height="270" Title="[ProductName] [ProductVersion] [Setup]" NoMinimize="yes">
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Next]">
+          <Publish Event="SpawnWaitDialog" Value="WaitForCostingDlg">CostingComplete = 1</Publish>
+          <Publish Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+        <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="[DialogBitmap]" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Back]" />
+        <Control Id="Description" Type="Text" X="135" Y="70" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
+          <Text>The [Wizard] will allow you to change the way [ProductName] features are installed on your computer or even to remove [ProductName] from your computer. Click Next to continue or Cancel to exit the [Wizard].</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
+          <Text>{\VerdanaBold13}Welcome to the [ProductName] [Wizard]</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="OutOfDiskDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_OK]">
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Description" Type="Text" X="20" Y="20" Width="280" Height="20" Transparent="yes" NoPrefix="yes">
+          <Text>Disk space required for the installation exceeds available disk space.</Text>
+        </Control>
+        <Control Id="Text" Type="Text" X="20" Y="53" Width="330" Height="40">
+          <Text>The highlighted volumes do not have enough disk space available for the currently selected features. You can either remove some files from the highlighted volumes, or choose to install less features onto local drive(s), or select different destination drive(s).</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}Out of Disk Space</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="VolumeList" Type="VolumeCostList" X="20" Y="100" Width="330" Height="120" Sunken="yes" Fixed="yes" Remote="yes">
+          <Text>{120}{70}{70}{70}{70}</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="OutOfRbDiskDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="No" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_No]">
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="Yes" Type="PushButton" X="240" Y="243" Width="56" Height="17" Text="[ButtonText_Yes]">
+          <Publish Event="EnableRollback" Value="False">1</Publish>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Description" Type="Text" X="20" Y="20" Width="280" Height="20" Transparent="yes" NoPrefix="yes">
+          <Text>Disk space required for the installation exceeds available disk space.</Text>
+        </Control>
+        <Control Id="Text" Type="Text" X="20" Y="53" Width="330" Height="40">
+          <Text>The highlighted volumes do not have enough disk space available for the currently selected features. You can either remove some files from the highlighted volumes, or choose to install less features onto local drive(s), or select different destination drive(s).</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}Out of Disk Space</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="VolumeList" Type="VolumeCostList" X="20" Y="140" Width="330" Height="80" Sunken="yes" Fixed="yes" Remote="yes" ShowRollbackCost="yes">
+          <Text>{120}{70}{70}{70}{70}</Text>
+        </Control>
+        <Control Id="Text2" Type="Text" X="20" Y="94" Width="330" Height="40">
+          <Text>Alternatively, you may choose to disable the installer's rollback functionality. This allows the installer to restore your computer's original state should the installation be interrupted in any way. Click Yes if you wish to take the risk to disable rollback.</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="ResumeDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="Install" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Install]">
+          <Publish Event="SpawnWaitDialog" Value="WaitForCostingDlg">CostingComplete = 1</Publish>
+          <Publish Event="EndDialog" Value="Return">
+            <![CDATA[OutOfDiskSpace <> 1]]>
+          </Publish>
+          <Publish Event="SpawnDialog" Value="OutOfRbDiskDlg">
+            <![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)]]>
+          </Publish>
+          <Publish Event="EndDialog" Value="Return">
+            <![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]>
+          </Publish>
+          <Publish Event="EnableRollback" Value="False">
+            <![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]>
+          </Publish>
+          <Publish Event="SpawnDialog" Value="OutOfDiskDlg">
+            <![CDATA[(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")]]>
+          </Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+        <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="[DialogBitmap]" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Back]" />
+        <Control Id="Description" Type="Text" X="135" Y="70" Width="220" Height="30" Transparent="yes" NoPrefix="yes">
+          <Text>The [Wizard] will complete the installation of [ProductName] on your computer. Click Install to continue or Cancel to exit the [Wizard].</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
+          <Text>{\VerdanaBold13}Resuming the [ProductName] [Wizard]</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="SetupTypeDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="TypicalLabel" Type="Text" X="105" Y="65" Width="100" Height="10" TabSkip="no">
+          <Text>{\DlgTitleFont}&amp;Typical</Text>
+        </Control>
+        <Control Id="TypicalButton" Type="PushButton" X="50" Y="65" Width="38" Height="38" ToolTip="Typical Installation" Default="yes" Icon="yes" FixedSize="yes" IconSize="32" Text="[InstallerIcon]">
+          <Publish Property="InstallMode" Value="Typical">1</Publish>
+          <Publish Event="SetInstallLevel" Value="3">1</Publish>
+          <Publish Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+        </Control>
+        <Control Id="CustomLabel" Type="Text" X="105" Y="118" Width="100" Height="10" TabSkip="no">
+          <Text>{\DlgTitleFont}C&amp;ustom</Text>
+        </Control>
+        <Control Id="CustomButton" Type="PushButton" X="50" Y="118" Width="38" Height="38" ToolTip="Custom Installation" Icon="yes" FixedSize="yes" IconSize="32" Text="[CustomSetupIcon]">
+          <Publish Property="InstallMode" Value="Custom">1</Publish>
+          <Publish Event="NewDialog" Value="CustomizeDlg">1</Publish>
+        </Control>
+        <Control Id="CompleteLabel" Type="Text" X="105" Y="171" Width="100" Height="10" TabSkip="no">
+          <Text>{\DlgTitleFont}C&amp;omplete</Text>
+        </Control>
+        <Control Id="CompleteButton" Type="PushButton" X="50" Y="171" Width="38" Height="38" ToolTip="Complete Installation" Icon="yes" FixedSize="yes" IconSize="32" Text="[CompleteSetupIcon]">
+          <Publish Property="InstallMode" Value="Complete">1</Publish>
+          <Publish Event="SetInstallLevel" Value="1000">1</Publish>
+          <Publish Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+        </Control>
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
+          <Publish Event="NewDialog" Value="WelcomeDlg">1</Publish>
+        </Control>
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Next]" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>Choose the setup type that best suits your needs</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}Choose Setup Type</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="CompleteText" Type="Text" X="105" Y="184" Width="230" Height="20">
+          <Text>All program features will be installed. (Requires most disk space)</Text>
+        </Control>
+        <Control Id="CustomText" Type="Text" X="105" Y="131" Width="230" Height="30">
+          <Text>Allows users to choose which program features will be installed and where they will be installed. Recommended for advanced users.</Text>
+        </Control>
+        <Control Id="TypicalText" Type="Text" X="105" Y="78" Width="230" Height="20">
+          <Text>Installs the most common program features. Recommended for most users.</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="VerifyReadyDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes" TrackDiskSpace="yes">
+        <Control Id="Install" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Install]">
+          <Publish Event="EndDialog" Value="Return">
+            <![CDATA[OutOfDiskSpace <> 1]]>
+          </Publish>
+          <Publish Event="SpawnDialog" Value="OutOfRbDiskDlg">
+            <![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)]]>
+          </Publish>
+          <Publish Event="EndDialog" Value="Return">
+            <![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]>
+          </Publish>
+          <Publish Event="EnableRollback" Value="False">
+            <![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]>
+          </Publish>
+          <Publish Event="SpawnDialog" Value="OutOfDiskDlg">
+            <![CDATA[(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")]]>
+          </Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
+          <Publish Event="NewDialog" Value="CustomizeDlg">
+            <![CDATA[InstallMode = "Custom" OR InstallMode = "Change"]]>
+          </Publish>
+          <Publish Event="NewDialog" Value="MaintenanceTypeDlg">
+            <![CDATA[InstallMode = "Repair"]]>
+          </Publish>
+          <Publish Event="NewDialog" Value="SetupTypeDlg">
+            <![CDATA[InstallMode = "Typical" OR InstallMode = "Complete"]]>
+          </Publish>
+        </Control>
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>The [Wizard] is ready to begin the [InstallMode] installation</Text>
+        </Control>
+        <Control Id="Text" Type="Text" X="25" Y="70" Width="320" Height="20">
+          <Text>Click Install to begin the installation. If you want to review or change any of your installation settings, click Back. Click Cancel to exit the wizard.</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}Ready to Install</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+      </Dialog>
+      <Dialog Id="VerifyRemoveDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes" TrackDiskSpace="yes">
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Back]">
+          <Publish Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+        </Control>
+        <Control Id="Remove" Type="PushButton" X="236" Y="243" Width="56" Height="17" Text="[ButtonText_Remove]">
+          <Publish Event="Remove" Value="All">
+            <![CDATA[OutOfDiskSpace <> 1]]>
+          </Publish>
+          <Publish Event="EndDialog" Value="Return">
+            <![CDATA[OutOfDiskSpace <> 1]]>
+          </Publish>
+          <Publish Event="SpawnDialog" Value="OutOfRbDiskDlg">
+            <![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)]]>
+          </Publish>
+          <Publish Event="EndDialog" Value="Return">
+            <![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]>
+          </Publish>
+          <Publish Event="EnableRollback" Value="False">
+            <![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]>
+          </Publish>
+          <Publish Event="SpawnDialog" Value="OutOfDiskDlg">
+            <![CDATA[(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")]]>
+          </Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>You have chosen to remove the program from your computer.</Text>
+        </Control>
+        <Control Id="Text" Type="Text" X="25" Y="70" Width="320" Height="30">
+          <Text>Click Remove to remove [ProductName] [ProductVersion] from your computer. If you want to review or change any of your installation settings, click Back. Click Cancel to exit the wizard.</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}Remove [ProductName] [ProductVersion]</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+      </Dialog>
+      <Dialog Id="VerifyRepairDlg" Width="370" Height="270" Title="[ProductName] [ProductVersion] [Setup]" NoMinimize="yes" TrackDiskSpace="yes">
+        <Control Id="Repair" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Repair]">
+          <Publish Event="ReinstallMode" Value="ecmus">
+            <![CDATA[OutOfDiskSpace <> 1]]>
+          </Publish>
+          <Publish Event="Reinstall" Value="All">
+            <![CDATA[OutOfDiskSpace <> 1]]>
+          </Publish>
+          <Publish Event="EndDialog" Value="Return">
+            <![CDATA[OutOfDiskSpace <> 1]]>
+          </Publish>
+          <Publish Event="SpawnDialog" Value="OutOfRbDiskDlg">
+            <![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)]]>
+          </Publish>
+          <Publish Event="EndDialog" Value="Return">
+            <![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]>
+          </Publish>
+          <Publish Event="EnableRollback" Value="False">
+            <![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]>
+          </Publish>
+          <Publish Event="SpawnDialog" Value="OutOfDiskDlg">
+            <![CDATA[(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")]]>
+          </Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
+          <Publish Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+        </Control>
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>The [Wizard] is ready to begin the repair of [ProductName].</Text>
+        </Control>
+        <Control Id="Text" Type="Text" X="25" Y="70" Width="320" Height="30">
+          <Text>Click Repair to repair the installation of [ProductName]. If you want to review or change any of your installation settings, click Back. Click Cancel to exit the wizard.</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}Repair [ProductName]</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+      </Dialog>
+      <Dialog Id="WaitForCostingDlg" Width="260" Height="85" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="Return" Type="PushButton" X="102" Y="57" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_Return]">
+          <Publish Event="EndDialog" Value="Exit">1</Publish>
+        </Control>
+        <Control Id="Text" Type="Text" X="48" Y="15" Width="194" Height="30">
+          <Text>Please wait while the installer finishes determining your disk space requirements.</Text>
+        </Control>
+        <Control Id="Icon" Type="Icon" X="15" Y="15" Width="24" Height="24" ToolTip="Exclamation icon" FixedSize="yes" IconSize="32" Text="[ExclamationIcon]" />
+      </Dialog>
+      <Dialog Id="WelcomeDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Next]">
+          <Publish Event="NewDialog" Value="SetupTypeDlg">1</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+        <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="[DialogBitmap]" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Back]" />
+        <Control Id="Description" Type="Text" X="135" Y="70" Width="220" Height="30" Transparent="yes" NoPrefix="yes">
+          <Text>The [Wizard] will install [ProductName] on your computer. Click Next to continue or Cancel to exit the [Wizard].</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
+          <Text>{\VerdanaBold13}Welcome to the [ProductName] [ProductVersion] [Wizard]</Text>
+        </Control>
+      </Dialog>
+      <RadioButtonGroup Property="IAgree">
+        <RadioButton Text="{\DlgFont8}I &amp;accept the terms in the License Agreement" Value="Yes" X="5" Y="0" Width="250" Height="15" />
+        <RadioButton Text="{\DlgFont8}I &amp;do not accept the terms in the License Agreement" Value="No" X="5" Y="20" Width="250" Height="15" />
+      </RadioButtonGroup>
+      <TextStyle Id="DlgFont8" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="DlgTitleFont" FaceName="Tahoma" Size="8" Bold="yes" />
+      <TextStyle Id="VerdanaBold13" FaceName="Verdana" Size="13" Bold="yes" />
+      <AdminUISequence>
+        <Show Dialog="FatalError" OnExit="error" />
+        <Show Dialog="UserExit" OnExit="cancel" />
+        <Show Dialog="ExitDialog" OnExit="success" />
+        <Show Dialog="PrepareDlg" Before="CostInitialize" />
+      </AdminUISequence>
+      <InstallUISequence>
+        <Show Dialog="FatalError" OnExit="error" />
+        <Show Dialog="UserExit" OnExit="cancel" />
+        <Show Dialog="ExitDialog" OnExit="success" />
+        <Show Dialog="PrepareDlg" After="LaunchConditions" />
+        <Show Dialog="WelcomeDlg" After="MigrateFeatureStates">NOT Installed</Show>
+        <Show Dialog="ResumeDlg" After="WelcomeDlg">Installed AND (RESUME OR Preselected)</Show>
+        <Show Dialog="MaintenanceWelcomeDlg" After="ResumeDlg">Installed AND NOT RESUME AND NOT Preselected</Show>
+        <Show Dialog="ProgressDlg" After="MaintenanceWelcomeDlg" />
+      </InstallUISequence>
+    </UI>
+    <Property Id="Setup">Setup</Property>
+    <Property Id="ButtonText_Back">&lt; &amp;Back</Property>
+    <Property Id="ButtonText_Browse">Br&amp;owse</Property>
+    <Property Id="ButtonText_Cancel">Cancel</Property>
+    <Property Id="ButtonText_Exit">&amp;Exit</Property>
+    <Property Id="ButtonText_Finish">&amp;Finish</Property>
+    <Property Id="ButtonText_Ignore">&amp;Ignore</Property>
+    <Property Id="ButtonText_Install">&amp;Install</Property>
+    <Property Id="ButtonText_Next">&amp;Next &gt;</Property>
+    <Property Id="ButtonText_No">&amp;No</Property>
+    <Property Id="ButtonText_OK">OK</Property>
+    <Property Id="ButtonText_Remove">&amp;Remove</Property>
+    <Property Id="ButtonText_Repair">&amp;Repair</Property>
+    <Property Id="ButtonText_Reset">&amp;Reset</Property>
+    <Property Id="ButtonText_Resume">&amp;Resume</Property>
+    <Property Id="ButtonText_Retry">&amp;Retry</Property>
+    <Property Id="ButtonText_Return">&amp;Return</Property>
+    <Property Id="ButtonText_Yes">&amp;Yes</Property>
+    <Property Id="BannerBitmap">bannrbmp</Property>
+    <Property Id="Wizard">Setup Wizard</Property>
+    <Property Id="InfoIcon">info</Property>
+    <Property Id="CustomSetupIcon">custicon</Property>
+    <Property Id="RemoveIcon">removico</Property>
+    <Property Id="ExclamationIcon">exclamic</Property>
+    <Property Id="CompleteSetupIcon">completi</Property>
+    <Property Id="RepairIcon">repairic</Property>
+    <Property Id="InstallerIcon">insticon</Property>
+    <Property Id="DialogBitmap">dlgbmp</Property>
+    <Property Id="LAUNCHPRODUCT">1</Property>
+    <Property Id="IAgree">No</Property>
+    <Binary Id="Up" SourceFile="Resources\Up.ico" />
+    <Binary Id="New" SourceFile="Resources\New.ico" />
+    <Binary Id="custicon" SourceFile="Resources\Custom.ico" />
+    <Binary Id="repairic" SourceFile="Resources\Repair.ico" />
+    <Binary Id="exclamic" SourceFile="Resources\Exclam.ico" />
+    <Binary Id="removico" SourceFile="Resources\Remove.ico" />
+    <Binary Id="completi" SourceFile="Resources\Complete.ico" />
+    <Binary Id="insticon" SourceFile="Resources\Typical.ico" />
+    <Binary Id="info" SourceFile="Resources\Info.ico" />
+    <Binary Id="bannrbmp" SourceFile="Resources\Banner.bmp" />
+    <Binary Id="dlgbmp" SourceFile="Resources\Dialog.bmp" />
+    <Icon Id="ApplicationIcon" SourceFile="Resources\AutomatedLab.ico" />
+    <Property Id="ARPPRODUCTICON" Value="ApplicationIcon" />
+    <Property Id="LABSOURCESOURCEFOLDER" Value="$(var.SolutionDir)LabSources" />
+    <!--<CustomAction Id='LaunchFile' FileKey='AutomatedLabDocumentationDocx' ExeCommand='' Return="asyncNoWait" />-->
+  </Product>
+  <Fragment>
+    <UI Id="UI_Texts">
+      <UIText Id="AbsentPath" />
+      <UIText Id="bytes">bytes</UIText>
+      <UIText Id="GB"> GB</UIText>
+      <UIText Id="KB"> KB</UIText>
+      <UIText Id="MB"> MB</UIText>
+      <UIText Id="MenuAbsent">Entire feature will be unavailable</UIText>
+      <UIText Id="MenuAdvertise">Feature will be installed when required</UIText>
+      <UIText Id="MenuAllCD">Entire feature will be installed to run from CD</UIText>
+      <UIText Id="MenuAllLocal">Entire feature will be installed on local hard drive</UIText>
+      <UIText Id="MenuAllNetwork">Entire feature will be installed to run from network</UIText>
+      <UIText Id="MenuCD">Will be installed to run from CD</UIText>
+      <UIText Id="MenuLocal">Will be installed on local hard drive</UIText>
+      <UIText Id="MenuNetwork">Will be installed to run from network</UIText>
+      <UIText Id="ScriptInProgress">Gathering required information...</UIText>
+      <UIText Id="SelAbsentAbsent">This feature will remain uninstalled</UIText>
+      <UIText Id="SelAbsentAdvertise">This feature will be set to be installed when required</UIText>
+      <UIText Id="SelAbsentCD">This feature will be installed to run from CD</UIText>
+      <UIText Id="SelAbsentLocal">This feature will be installed on the local hard drive</UIText>
+      <UIText Id="SelAbsentNetwork">This feature will be installed to run from the network</UIText>
+      <UIText Id="SelAdvertiseAbsent">This feature will become unavailable</UIText>
+      <UIText Id="SelAdvertiseAdvertise">Will be installed when required</UIText>
+      <UIText Id="SelAdvertiseCD">This feature will be available to run from CD</UIText>
+      <UIText Id="SelAdvertiseLocal">This feature will be installed on your local hard drive</UIText>
+      <UIText Id="SelAdvertiseNetwork">This feature will be available to run from the network</UIText>
+      <UIText Id="SelCDAbsent">This feature will be uninstalled completely, you won't be able to run it from CD</UIText>
+      <UIText Id="SelCDAdvertise">This feature will change from run from CD state to set to be installed when required</UIText>
+      <UIText Id="SelCDCD">This feature will remain to be run from CD</UIText>
+      <UIText Id="SelCDLocal">This feature will change from run from CD state to be installed on the local hard drive</UIText>
+      <UIText Id="SelChildCostNeg">This feature frees up [1] on your hard drive.</UIText>
+      <UIText Id="SelChildCostPos">This feature requires [1] on your hard drive.</UIText>
+      <UIText Id="SelCostPending">Compiling cost for this feature...</UIText>
+      <UIText Id="SelLocalAbsent">This feature will be completely removed</UIText>
+      <UIText Id="SelLocalAdvertise">This feature will be removed from your local hard drive, but will be set to be installed when required</UIText>
+      <UIText Id="SelLocalCD">This feature will be removed from your local hard drive, but will be still available to run from CD</UIText>
+      <UIText Id="SelLocalLocal">This feature will remain on you local hard drive</UIText>
+      <UIText Id="SelLocalNetwork">This feature will be removed from your local hard drive, but will be still available to run from the network</UIText>
+      <UIText Id="SelNetworkAbsent">This feature will be uninstalled completely, you won't be able to run it from the network</UIText>
+      <UIText Id="SelNetworkAdvertise">This feature will change from run from network state to set to be installed when required</UIText>
+      <UIText Id="SelNetworkLocal">This feature will change from run from network state to be installed on the local hard drive</UIText>
+      <UIText Id="SelNetworkNetwork">This feature will remain to be run from the network</UIText>
+      <UIText Id="SelParentCostNegNeg">This feature frees up [1] on your hard drive. It has [2] of [3] subfeatures selected. The subfeatures free up [4] on your hard drive.</UIText>
+      <UIText Id="SelParentCostNegPos">This feature frees up [1] on your hard drive. It has [2] of [3] subfeatures selected. The subfeatures require [4] on your hard drive.</UIText>
+      <UIText Id="SelParentCostPosNeg">This feature requires [1] on your hard drive. It has [2] of [3] subfeatures selected. The subfeatures free up [4] on your hard drive.</UIText>
+      <UIText Id="SelParentCostPosPos">This feature requires [1] on your hard drive. It has [2] of [3] subfeatures selected. The subfeatures require [4] on your hard drive.</UIText>
+      <UIText Id="TimeRemaining">Time remaining: {[1] minutes }{[2] seconds}</UIText>
+      <UIText Id="VolumeCostAvailable">Available</UIText>
+      <UIText Id="VolumeCostDifference">Difference</UIText>
+      <UIText Id="VolumeCostRequired">Required</UIText>
+      <UIText Id="VolumeCostSize">Disk Size</UIText>
+      <UIText Id="VolumeCostVolume">Volume</UIText>
+      <ProgressText Action="CostFinalize">Computing space requirements</ProgressText>
+      <ProgressText Action="CostInitialize">Computing space requirements</ProgressText>
+      <ProgressText Action="FileCost">Computing space requirements</ProgressText>
+      <ProgressText Action="InstallValidate">Validating install</ProgressText>
+      <ProgressText Action="InstallFiles" Template="File: [1],  Directory: [9],  Size: [6]">Copying new files</ProgressText>
+      <ProgressText Action="InstallAdminPackage" Template="File: [1], Directory: [9], Size: [6]">Copying network install files</ProgressText>
+      <ProgressText Action="CreateShortcuts" Template="Shortcut: [1]">Creating shortcuts</ProgressText>
+      <ProgressText Action="PublishComponents" Template="Component ID: [1], Qualifier: [2]">Publishing Qualified Components</ProgressText>
+      <ProgressText Action="PublishFeatures" Template="Feature: [1]">Publishing Product Features</ProgressText>
+      <ProgressText Action="PublishProduct">Publishing product information</ProgressText>
+      <ProgressText Action="RegisterClassInfo" Template="Class Id: [1]">Registering Class servers</ProgressText>
+      <ProgressText Action="RegisterExtensionInfo" Template="Extension: [1]">Registering extension servers</ProgressText>
+      <ProgressText Action="RegisterMIMEInfo" Template="MIME Content Type: [1], Extension: [2]">Registering MIME info</ProgressText>
+      <ProgressText Action="RegisterProgIdInfo" Template="ProgId: [1]">Registering program identifiers</ProgressText>
+      <ProgressText Action="AllocateRegistrySpace" Template="Free space: [1]">Allocating registry space</ProgressText>
+      <ProgressText Action="AppSearch" Template="Property: [1], Signature: [2]">Searching for installed applications</ProgressText>
+      <ProgressText Action="BindImage" Template="File: [1]">Binding executables</ProgressText>
+      <ProgressText Action="CCPSearch">Searching for qualifying products</ProgressText>
+      <ProgressText Action="CreateFolders" Template="Folder: [1]">Creating folders</ProgressText>
+      <ProgressText Action="DeleteServices" Template="Service: [1]">Deleting services</ProgressText>
+      <ProgressText Action="DuplicateFiles" Template="File: [1],  Directory: [9],  Size: [6]">Creating duplicate files</ProgressText>
+      <ProgressText Action="FindRelatedProducts" Template="Found application: [1]">Searching for related applications</ProgressText>
+      <ProgressText Action="InstallODBC">Installing ODBC components</ProgressText>
+      <ProgressText Action="InstallServices" Template="Service: [2]">Installing new services</ProgressText>
+      <ProgressText Action="LaunchConditions">Evaluating launch conditions</ProgressText>
+      <ProgressText Action="MigrateFeatureStates" Template="Application: [1]">Migrating feature states from related applications</ProgressText>
+      <ProgressText Action="MoveFiles" Template="File: [1],  Directory: [9],  Size: [6]">Moving files</ProgressText>
+      <ProgressText Action="PatchFiles" Template="File: [1],  Directory: [2],  Size: [3]">Patching files</ProgressText>
+      <ProgressText Action="ProcessComponents">Updating component registration</ProgressText>
+      <ProgressText Action="RegisterComPlus" Template="AppId: [1]{{, AppType: [2], Users: [3], RSN: [4]}}">Registering COM+ Applications and Components</ProgressText>
+      <ProgressText Action="RegisterFonts" Template="Font: [1]">Registering fonts</ProgressText>
+      <ProgressText Action="RegisterProduct" Template="[1]">Registering product</ProgressText>
+      <ProgressText Action="RegisterTypeLibraries" Template="LibID: [1]">Registering type libraries</ProgressText>
+      <ProgressText Action="RegisterUser" Template="[1]">Registering user</ProgressText>
+      <ProgressText Action="RemoveDuplicateFiles" Template="File: [1], Directory: [9]">Removing duplicated files</ProgressText>
+      <ProgressText Action="RemoveEnvironmentStrings" Template="Name: [1], Value: [2], Action [3]">Updating environment strings</ProgressText>
+      <ProgressText Action="RemoveExistingProducts" Template="Application: [1], Command line: [2]">Removing applications</ProgressText>
+      <ProgressText Action="RemoveFiles" Template="File: [1], Directory: [9]">Removing files</ProgressText>
+      <ProgressText Action="RemoveFolders" Template="Folder: [1]">Removing folders</ProgressText>
+      <ProgressText Action="RemoveIniValues" Template="File: [1],  Section: [2],  Key: [3], Value: [4]">Removing INI files entries</ProgressText>
+      <ProgressText Action="RemoveODBC">Removing ODBC components</ProgressText>
+      <ProgressText Action="RemoveRegistryValues" Template="Key: [1], Name: [2]">Removing system registry values</ProgressText>
+      <ProgressText Action="RemoveShortcuts" Template="Shortcut: [1]">Removing shortcuts</ProgressText>
+      <ProgressText Action="RMCCPSearch">Searching for qualifying products</ProgressText>
+      <ProgressText Action="SelfRegModules" Template="File: [1], Folder: [2]">Registering modules</ProgressText>
+      <ProgressText Action="SelfUnregModules" Template="File: [1], Folder: [2]">Unregistering modules</ProgressText>
+      <ProgressText Action="SetODBCFolders">Initializing ODBC directories</ProgressText>
+      <ProgressText Action="StartServices" Template="Service: [1]">Starting services</ProgressText>
+      <ProgressText Action="StopServices" Template="Service: [1]">Stopping services</ProgressText>
+      <ProgressText Action="UnpublishComponents" Template="Component ID: [1], Qualifier: [2]">Unpublishing Qualified Components</ProgressText>
+      <ProgressText Action="UnpublishFeatures" Template="Feature: [1]">Unpublishing Product Features</ProgressText>
+      <ProgressText Action="UnregisterClassInfo" Template="Class Id: [1]">Unregister Class servers</ProgressText>
+      <ProgressText Action="UnregisterComPlus" Template="AppId: [1]{{, AppType: [2]}}">Unregistering COM+ Applications and Components</ProgressText>
+      <ProgressText Action="UnregisterExtensionInfo" Template="Extension: [1]">Unregistering extension servers</ProgressText>
+      <ProgressText Action="UnregisterFonts" Template="Font: [1]">Unregistering fonts</ProgressText>
+      <ProgressText Action="UnregisterMIMEInfo" Template="MIME Content Type: [1], Extension: [2]">Unregistering MIME info</ProgressText>
+      <ProgressText Action="UnregisterProgIdInfo" Template="ProgId: [1]">Unregistering program identifiers</ProgressText>
+      <ProgressText Action="UnregisterTypeLibraries" Template="LibID: [1]">Unregistering type libraries</ProgressText>
+      <ProgressText Action="WriteEnvironmentStrings" Template="Name: [1], Value: [2], Action [3]">Updating environment strings</ProgressText>
+      <ProgressText Action="WriteIniValues" Template="File: [1],  Section: [2],  Key: [3], Value: [4]">Writing INI files values</ProgressText>
+      <ProgressText Action="WriteRegistryValues" Template="Key: [1], Name: [2], Value: [3]">Writing system registry values</ProgressText>
+      <ProgressText Action="Advertise">Advertising application</ProgressText>
+      <ProgressText Action="GenerateScript" Template="[1]">Generating script operations for action:</ProgressText>
+      <ProgressText Action="InstallSFPCatalogFile" Template="File: [1],  Dependencies: [2]">Installing system catalog</ProgressText>
+      <ProgressText Action="MsiPublishAssemblies" Template="Application Context:[1], Assembly Name:[2]">Publishing assembly information</ProgressText>
+      <ProgressText Action="MsiUnpublishAssemblies" Template="Application Context:[1], Assembly Name:[2]">Unpublishing assembly information</ProgressText>
+      <ProgressText Action="Rollback" Template="[1]">Rolling back action:</ProgressText>
+      <ProgressText Action="RollbackCleanup" Template="File: [1]">Removing backup files</ProgressText>
+      <ProgressText Action="UnmoveFiles" Template="File: [1], Directory: [9]">Removing moved files</ProgressText>
+      <ProgressText Action="UnpublishProduct">Unpublishing product information</ProgressText>
+      <Error Id="0">{{Fatal error: }}</Error>
+      <Error Id="1">{{Error [1]. }}</Error>
+      <Error Id="2">Warning [1]. </Error>
+      <Error Id="3" />
+      <Error Id="4">Info [1]. </Error>
+      <Error Id="5">The installer has encountered an unexpected error installing this package. This may indicate a problem with this package. The error code is [1]. {{The arguments are: [2], [3], [4]}}</Error>
+      <Error Id="6" />
+      <Error Id="7">{{Disk full: }}</Error>
+      <Error Id="8">Action [Time]: [1]. [2]</Error>
+      <Error Id="9">[ProductName]</Error>
+      <Error Id="10">{[2]}{, [3]}{, [4]}</Error>
+      <Error Id="11">Message type: [1], Argument: [2]</Error>
+      <Error Id="12">=== Logging started: [Date]  [Time] ===</Error>
+      <Error Id="13">=== Logging stopped: [Date]  [Time] ===</Error>
+      <Error Id="14">Action start [Time]: [1].</Error>
+      <Error Id="15">Action ended [Time]: [1]. Return value [2].</Error>
+      <Error Id="16">Time remaining: {[1] minutes }{[2] seconds}</Error>
+      <Error Id="17">Out of memory. Shut down other applications before retrying.</Error>
+      <Error Id="18">Installer is no longer responding.</Error>
+      <Error Id="19">Installer stopped prematurely.</Error>
+      <Error Id="20">Please wait while Windows configures [ProductName]</Error>
+      <Error Id="21">Gathering required information...</Error>
+      <Error Id="22">Removing older versions of this application...</Error>
+      <Error Id="23">Preparing to remove older versions of this application...</Error>
+      <Error Id="32">{[ProductName] }Setup completed successfully.</Error>
+      <Error Id="33">{[ProductName] }Setup failed.</Error>
+      <Error Id="1101">Error reading from file: [2]. {{ System error [3].}}  Verify that the file exists and that you can access it.</Error>
+      <Error Id="1301">Cannot create the file '[2]'. A directory with this name already exists. Cancel the install and try installing to a different location.</Error>
+      <Error Id="1302">Please insert the disk: [2]</Error>
+      <Error Id="1303">The installer has insufficient privileges to access this directory: [2]. The installation cannot continue. Log on as administrator or contact your system administrator.</Error>
+      <Error Id="1304">Error writing to file: [2]. Verify that you have access to that directory.</Error>
+      <Error Id="1305">Error reading from file [2]. {{ System error [3].}} Verify that the file exists and that you can access it.</Error>
+      <Error Id="1306">Another application has exclusive access to the file '[2]'. Please shut down all other applications, then click Retry.</Error>
+      <Error Id="1307">There is not enough disk space to install this file: [2]. Free some disk space and click Retry, or click Cancel to exit.</Error>
+      <Error Id="1308">Source file not found: [2]. Verify that the file exists and that you can access it.</Error>
+      <Error Id="1309">Error reading from file: [3]. {{ System error [2].}}  Verify that the file exists and that you can access it.</Error>
+      <Error Id="1310">Error writing to file: [3]. {{ System error [2].}}  Verify that you have access to that directory.</Error>
+      <Error Id="1311">Source file not found{{(cabinet)}}: [2]. Verify that the file exists and that you can access it.</Error>
+      <Error Id="1312">Cannot create the directory '[2]'. A file with this name already exists. Please rename or remove the file and click retry, or click Cancel to exit.</Error>
+      <Error Id="1313">The volume [2] is currently unavailable. Please select another.</Error>
+      <Error Id="1314">The specified path '[2]' is unavailable.</Error>
+      <Error Id="1315">Unable to write to the specified folder: [2].</Error>
+      <Error Id="1316">A network error occurred while attempting to read from the file: [2]</Error>
+      <Error Id="1317">An error occurred while attempting to create the directory: [2]</Error>
+      <Error Id="1318">A network error occurred while attempting to create the directory: [2]</Error>
+      <Error Id="1319">A network error occurred while attempting to open the source file cabinet: [2]</Error>
+      <Error Id="1320">The specified path is too long: [2]</Error>
+      <Error Id="1321">The Installer has insufficient privileges to modify this file: [2].</Error>
+      <Error Id="1322">A portion of the folder path '[2]' is invalid. It is either empty or exceeds the length allowed by the system.</Error>
+      <Error Id="1323">The folder path '[2]' contains words that are not valid in folder paths.</Error>
+      <Error Id="1324">The folder path '[2]' contains an invalid character.</Error>
+      <Error Id="1325">'[2]' is not a valid short file name.</Error>
+      <Error Id="1326">Error getting file security: [3] GetLastError: [2]</Error>
+      <Error Id="1327">Invalid Drive: [2]</Error>
+      <Error Id="1328">Error applying patch to file [2]. It has probably been updated by other means, and can no longer be modified by this patch. For more information contact your patch vendor. {{System Error: [3]}}</Error>
+      <Error Id="1329">A file that is required cannot be installed because the cabinet file [2] is not digitally signed. This may indicate that the cabinet file is corrupt.</Error>
+      <Error Id="1330">A file that is required cannot be installed because the cabinet file [2] has an invalid digital signature. This may indicate that the cabinet file is corrupt.{{  Error [3] was returned by WinVerifyTrust.}}</Error>
+      <Error Id="1331">Failed to correctly copy [2] file: CRC error.</Error>
+      <Error Id="1332">Failed to correctly move [2] file: CRC error.</Error>
+      <Error Id="1333">Failed to correctly patch [2] file: CRC error.</Error>
+      <Error Id="1334">The file '[2]' cannot be installed because the file cannot be found in cabinet file '[3]'. This could indicate a network error, an error reading from the CD-ROM, or a problem with this package.</Error>
+      <Error Id="1335">The cabinet file '[2]' required for this installation is corrupt and cannot be used. This could indicate a network error, an error reading from the CD-ROM, or a problem with this package.</Error>
+      <Error Id="1336">There was an error creating a temporary file that is needed to complete this installation.{{  Folder: [3]. System error code: [2]}}</Error>
+      <Error Id="1401">Could not create key: [2]. {{ System error [3].}}  Verify that you have sufficient access to that key, or contact your support personnel. </Error>
+      <Error Id="1402">Could not open key: [2]. {{ System error [3].}}  Verify that you have sufficient access to that key, or contact your support personnel. </Error>
+      <Error Id="1403">Could not delete value [2] from key [3]. {{ System error [4].}}  Verify that you have sufficient access to that key, or contact your support personnel. </Error>
+      <Error Id="1404">Could not delete key [2]. {{ System error [3].}}  Verify that you have sufficient access to that key, or contact your support personnel. </Error>
+      <Error Id="1405">Could not read value [2] from key [3]. {{ System error [4].}}  Verify that you have sufficient access to that key, or contact your support personnel. </Error>
+      <Error Id="1406">Could not write value [2] to key [3]. {{ System error [4].}}  Verify that you have sufficient access to that key, or contact your support personnel.</Error>
+      <Error Id="1407">Could not get value names for key [2]. {{ System error [3].}}  Verify that you have sufficient access to that key, or contact your support personnel.</Error>
+      <Error Id="1408">Could not get sub key names for key [2]. {{ System error [3].}}  Verify that you have sufficient access to that key, or contact your support personnel.</Error>
+      <Error Id="1409">Could not read security information for key [2]. {{ System error [3].}}  Verify that you have sufficient access to that key, or contact your support personnel.</Error>
+      <Error Id="1410">Could not increase the available registry space. [2] KB of free registry space is required for the installation of this application.</Error>
+      <Error Id="1500">Another installation is in progress. You must complete that installation before continuing this one.</Error>
+      <Error Id="1501">Error accessing secured data. Please make sure the Windows Installer is configured properly and try the install again.</Error>
+      <Error Id="1502">User '[2]' has previously initiated an install for product '[3]'. That user will need to run that install again before they can use that product. Your current install will now continue.</Error>
+      <Error Id="1503">User '[2]' has previously initiated an install for product '[3]'. That user will need to run that install again before they can use that product.</Error>
+      <Error Id="1601">Out of disk space -- Volume: '[2]'; required space: [3] KB; available space: [4] KB. Free some disk space and retry.</Error>
+      <Error Id="1602">Are you sure you want to cancel?</Error>
+      <Error Id="1603">The file [2][3] is being held in use{ by the following process: Name: [4], Id: [5], Window Title: '[6]'}. Close that application and retry.</Error>
+      <Error Id="1604">The product '[2]' is already installed, preventing the installation of this product. The two products are incompatible.</Error>
+      <Error Id="1605">There is not enough disk space on the volume '[2]' to continue the install with recovery enabled. [3] KB are required, but only [4] KB are available. Click Ignore to continue the install without saving recovery information, click Retry to check for available space again, or click Cancel to quit the installation.</Error>
+      <Error Id="1606">Could not access network location [2].</Error>
+      <Error Id="1607">The following applications should be closed before continuing the install:</Error>
+      <Error Id="1608">Could not find any previously installed compliant products on the machine for installing this product.</Error>
+      <Error Id="1609">An error occurred while applying security settings. [2] is not a valid user or group. This could be a problem with the package, or a problem connecting to a domain controller on the network. Check your network connection and click Retry, or Cancel to end the install. {{Unable to locate the user's SID, system error [3]}}</Error>
+      <Error Id="1701">The key [2] is not valid. Verify that you entered the correct key.</Error>
+      <Error Id="1702">The installer must restart your system before configuration of [2] can continue. Click Yes to restart now or No if you plan to manually restart later.</Error>
+      <Error Id="1703">You must restart your system for the configuration changes made to [2] to take effect. Click Yes to restart now or No if you plan to manually restart later.</Error>
+      <Error Id="1704">An installation for [2] is currently suspended. You must undo the changes made by that installation to continue. Do you want to undo those changes?</Error>
+      <Error Id="1705">A previous installation for this product is in progress. You must undo the changes made by that installation to continue. Do you want to undo those changes?</Error>
+      <Error Id="1706">An installation package for the product [2] cannot be found. Try the installation again using a valid copy of the installation package '[3]'.</Error>
+      <Error Id="1707">Installation completed successfully.</Error>
+      <Error Id="1708">Installation failed.</Error>
+      <Error Id="1709">Product: [2] -- [3]</Error>
+      <Error Id="1710">You may either restore your computer to its previous state or continue the install later. Would you like to restore?</Error>
+      <Error Id="1711">An error occurred while writing installation information to disk. Check to make sure enough disk space is available, and click Retry, or Cancel to end the install.</Error>
+      <Error Id="1712">One or more of the files required to restore your computer to its previous state could not be found. Restoration will not be possible.</Error>
+      <Error Id="1713">[2] cannot install one of its required products. Contact your technical support group. {{System Error: [3].}}</Error>
+      <Error Id="1714">The older version of [2] cannot be removed. Contact your technical support group. {{System Error [3].}}</Error>
+      <Error Id="1715">Installed [2]</Error>
+      <Error Id="1716">Configured [2]</Error>
+      <Error Id="1717">Removed [2]</Error>
+      <Error Id="1718">File [2] was rejected by digital signature policy.</Error>
+      <Error Id="1719">The Windows Installer Service could not be accessed. This can occur if you are running Windows in safe mode, or if the Windows Installer is not correctly installed. Contact your support personnel for assistance.</Error>
+      <Error Id="1720">There is a problem with this Windows Installer package. A script required for this install to complete could not be run. Contact your support personnel or package vendor. {{Custom action [2] script error [3], [4]: [5] Line [6], Column [7], [8] }}</Error>
+      <Error Id="1721">There is a problem with this Windows Installer package. A program required for this install to complete could not be run. Contact your support personnel or package vendor. {{Action: [2], location: [3], command: [4] }}</Error>
+      <Error Id="1722">There is a problem with this Windows Installer package. A program run as part of the setup did not finish as expected. Contact your support personnel or package vendor. {{Action [2], location: [3], command: [4] }}</Error>
+      <Error Id="1723">There is a problem with this Windows Installer package. A DLL required for this install to complete could not be run. Contact your support personnel or package vendor. {{Action [2], entry: [3], library: [4] }}</Error>
+      <Error Id="1724">Removal completed successfully.</Error>
+      <Error Id="1725">Removal failed.</Error>
+      <Error Id="1726">Advertisement completed successfully.</Error>
+      <Error Id="1727">Advertisement failed.</Error>
+      <Error Id="1728">Configuration completed successfully.</Error>
+      <Error Id="1729">Configuration failed.</Error>
+      <Error Id="1730">You must be an Administrator to remove this application. To remove this application, you can log on as an Administrator, or contact your technical support group for assistance.</Error>
+      <Error Id="1801">The path [2] is not valid. Please specify a valid path.</Error>
+      <Error Id="1802">Out of memory. Shut down other applications before retrying.</Error>
+      <Error Id="1803">There is no disk in drive [2]. Please insert one and click Retry, or click Cancel to go back to the previously selected volume.</Error>
+      <Error Id="1804">There is no disk in drive [2]. Please insert one and click Retry, or click Cancel to return to the browse dialog and select a different volume.</Error>
+      <Error Id="1805">The folder [2] does not exist. Please enter a path to an existing folder.</Error>
+      <Error Id="1806">You have insufficient privileges to read this folder.</Error>
+      <Error Id="1807">A valid destination folder for the install could not be determined.</Error>
+      <Error Id="1901">Error attempting to read from the source install database: [2].</Error>
+      <Error Id="1902">Scheduling reboot operation: Renaming file [2] to [3]. Must reboot to complete operation.</Error>
+      <Error Id="1903">Scheduling reboot operation: Deleting file [2]. Must reboot to complete operation.</Error>
+      <Error Id="1904">Module [2] failed to register. HRESULT [3]. Contact your support personnel.</Error>
+      <Error Id="1905">Module [2] failed to unregister. HRESULT [3]. Contact your support personnel.</Error>
+      <Error Id="1906">Failed to cache package [2]. Error: [3]. Contact your support personnel.</Error>
+      <Error Id="1907">Could not register font [2]. Verify that you have sufficient permissions to install fonts, and that the system supports this font.</Error>
+      <Error Id="1908">Could not unregister font [2]. Verify that you that you have sufficient permissions to remove fonts.</Error>
+      <Error Id="1909">Could not create Shortcut [2]. Verify that the destination folder exists and that you can access it.</Error>
+      <Error Id="1910">Could not remove Shortcut [2]. Verify that the shortcut file exists and that you can access it.</Error>
+      <Error Id="1911">Could not register type library for file [2]. Contact your support personnel.</Error>
+      <Error Id="1912">Could not unregister type library for file [2]. Contact your support personnel.</Error>
+      <Error Id="1913">Could not update the ini file [2][3]. Verify that the file exists and that you can access it.</Error>
+      <Error Id="1914">Could not schedule file [2] to replace file [3] on reboot. Verify that you have write permissions to file [3].</Error>
+      <Error Id="1915">Error removing ODBC driver manager, ODBC error [2]: [3]. Contact your support personnel.</Error>
+      <Error Id="1916">Error installing ODBC driver manager, ODBC error [2]: [3]. Contact your support personnel.</Error>
+      <Error Id="1917">Error removing ODBC driver: [4], ODBC error [2]: [3]. Verify that you have sufficient privileges to remove ODBC drivers.</Error>
+      <Error Id="1918">Error installing ODBC driver: [4], ODBC error [2]: [3]. Verify that the file [4] exists and that you can access it.</Error>
+      <Error Id="1919">Error configuring ODBC data source: [4], ODBC error [2]: [3]. Verify that the file [4] exists and that you can access it.</Error>
+      <Error Id="1920">Service '[2]' ([3]) failed to start. Verify that you have sufficient privileges to start system services.</Error>
+      <Error Id="1921">Service '[2]' ([3]) could not be stopped. Verify that you have sufficient privileges to stop system services.</Error>
+      <Error Id="1922">Service '[2]' ([3]) could not be deleted. Verify that you have sufficient privileges to remove system services.</Error>
+      <Error Id="1923">Service '[2]' ([3]) could not be installed. Verify that you have sufficient privileges to install system services.</Error>
+      <Error Id="1924">Could not update environment variable '[2]'. Verify that you have sufficient privileges to modify environment variables.</Error>
+      <Error Id="1925">You do not have sufficient privileges to complete this installation for all users of the machine. Log on as administrator and then retry this installation.</Error>
+      <Error Id="1926">Could not set file security for file '[3]'. Error: [2]. Verify that you have sufficient privileges to modify the security permissions for this file.</Error>
+      <Error Id="1927">Component Services (COM+ 1.0) are not installed on this computer. This installation requires Component Services in order to complete successfully. Component Services are available on Windows 2000.</Error>
+      <Error Id="1928">Error registering COM+ Application. Contact your support personnel for more information.</Error>
+      <Error Id="1929">Error unregistering COM+ Application. Contact your support personnel for more information.</Error>
+      <Error Id="1930">The description for service '[2]' ([3]) could not be changed.</Error>
+      <Error Id="1931">The Windows Installer service cannot update the system file [2] because the file is protected by Windows. You may need to update your operating system for this program to work correctly. {{Package version: [3], OS Protected version: [4]}}</Error>
+      <Error Id="1932">The Windows Installer service cannot update the protected Windows file [2]. {{Package version: [3], OS Protected version: [4], SFP Error: [5]}}</Error>
+      <Error Id="1933">The Windows Installer service cannot update one or more protected Windows files. {{SFP Error: [2]. List of protected files:\r\n[3]}}</Error>
+      <Error Id="1934">User installations are disabled via policy on the machine.</Error>
+      <Error Id="1935">An error occured during the installation of assembly component [2]. HRESULT: [3]. {{assembly interface: [4], function: [5], assembly name: [6]}}</Error>
+    </UI>
+  </Fragment>
+  <!-- Define custom action to run a PowerShell script-->
+
+  <!--All references created using heat.exe-->
+  <Fragment>
+    <ComponentGroup Id="LabSourcesComponentGroup">
+      <Component Id="cmp5C2AC57928537B9972701349942A3FFA" Directory="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39" Guid="b201d944-e2ac-4186-a6da-0582fcbd97df">
+        <File Id="fil1B630379D59BAF3FB3D75978CD293A6B" KeyPath="yes" Source="$(var.SolutionDir)\LabSources\CustomRoles\README.md" />
+      </Component>
+      <Component Id="cmp5192578560334F24BC166F2BF05FEA16" Directory="dirE5932629FB4A45BB8ABFA79A78890A04" Guid="b3952a83-4f30-4709-8236-e107e5071d36">
+        <File Id="fil68d33fed4c7f4f8b83f5fc86d924600e" KeyPath="yes" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-1902\ConfigurationFile-SQL.ini" />
+        <File Id="fil18ace1a31c3d4837877053c2cb91a694" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-1902\HostStart.ps1" />
+        <File Id="fil5d8467bd9d3c4ca69b64092c4d6b1948" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-1902\Invoke-CustomiseCM.ps1" />
+        <File Id="fil760c2c67fe0b4206acf78daa3b8f3879" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-1902\Invoke-DownloadADK.ps1" />
+        <File Id="fil3e9ca7e859044c879b62d400366f630e" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-1902\Invoke-DownloadCM.ps1" />
+        <File Id="fila209b4ed5af743b196c755331f316841" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-1902\Invoke-DownloadMisc.ps1" />
+        <File Id="fil3ad4c4c495024d66ae7101748c8ddfe4" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-1902\Invoke-InstallCM.ps1" />
+        <File Id="fil3ad4c4c495024d66ae7101748c8ddfe5" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-1902\Invoke-UpdateCM.ps1" />
+      </Component>
+      <Component Id="cmp8BC6C6CFD6FF4582BEB3345446EF50CA" Directory="dir141892B23C7E4AD281B7868E9429C03A" Guid="8afb2c5e-3bb3-4ad7-bed8-7b6a67fab629">
+        <File Id="filD6986FB1EBC3401F9F4314E8EC47F80E" KeyPath="yes" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2002\ConfigurationFile-SQL.ini" />
+        <File Id="filDA940B9E558B4E88A117C82AA0AAEF9C" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2002\HostStart.ps1" />
+        <File Id="fil9DE4F3BD37184443BACC10CAA14D82E4" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2002\Invoke-CustomiseCM.ps1" />
+        <File Id="fil3B5378076932419AB2B6856BFC2E39AA" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2002\Invoke-DownloadADK.ps1" />
+        <File Id="filB12A698C7E014E2681486177757BF765" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2002\Invoke-DownloadCM.ps1" />
+        <File Id="fil1042B56EE65A41BA9202D1A4B7F90865" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2002\Invoke-DownloadMisc.ps1" />
+        <File Id="filE8BE53CB20FF4E2AA6881ACFA9E86E09" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2002\Invoke-InstallCM.ps1" />
+        <File Id="fil153E8CD183634BDB9E3264DA03919A12" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2002\Invoke-UpdateCM.ps1" />
+      </Component>
+      <Component Id="cmp058B8A745C134E3FA9C17460D3A09D98" Directory="dirD74EDE5ACE9244AAAAA4BC50F8AA8BD23" Guid="4c437b02-4e84-4f9f-a439-7677891553a3">
+        <File Id="filE5F47FF9A73F4B7FADE065D3D4C314DF" KeyPath="yes" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2103\ConfigurationFile-SQL.ini" />
+        <File Id="fil9BCDAAFE06E14A79A769B11B8BF8F0B5" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2103\HostStart.ps1" />
+        <File Id="fil9563F35CA8A243B1B2360056775BF475" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2103\Invoke-CustomiseCM.ps1" />
+        <File Id="fil0F084D6433484C50A81FB78CCFE4D97E" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2103\Invoke-DownloadADK.ps1" />
+        <File Id="fil2091D65AAC054DB09D6AC99AD429BCA3" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2103\Invoke-DownloadCM.ps1" />
+        <File Id="filFD8AD0CAB7464D6B87666C49248C175E" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2103\Invoke-DownloadMisc.ps1" />
+        <File Id="fil2E8C0BC817624863A9E877D52AEA0FC3" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2103\Invoke-InstallCM.ps1" />
+        <File Id="fil87783AD566374D4FA9D658BF17EB789A" Source="$(var.SolutionDir)\LabSources\CustomRoles\CM-2103\Invoke-UpdateCM.ps1" />
+      </Component>
+      <Component Id="cmp37d492e149754ae5a9ec1f7d4dca1274" Directory="dirD49C097A947F489194CAACFE550AC9C2" Guid="b206fa90-412b-4d5d-9cdf-e7265d07fb7c">
+        <File Id="fil14812A370302467D999A50F69F73486E" KeyPath="yes" Source="$(var.SolutionDir)\LabSources\CustomRoles\MDT\DownloadAdk.ps1" />
+        <File Id="fil90167B87796A44B0B67E03659AD053BD" Source="$(var.SolutionDir)\LabSources\CustomRoles\MDT\HostStart.ps1" />
+        <File Id="filD931618E1A1748F4BCEA35443E457FF8" Source="$(var.SolutionDir)\LabSources\CustomRoles\MDT\InstallMDT.ps1" />
+        <File Id="filA30EA48DB25F4DFE9B46C7BF8ECC2BEE" Source="$(var.SolutionDir)\LabSources\CustomRoles\MDT\MDTApplications.xml" />
+      </Component>
+      <Component Id="cmpD0587757D9A94FF2B4794226ABE4E3BF" Directory="dir173133541A464C18AA07E8E6F6862181" Guid="c4aea826-aae0-4318-b8c4-d5b29bfd9ab1">
+        <File Id="fil4BCECFAE71234E86B1B97C4A0B0D5848" Source="$(var.SolutionDir)\LabSources\CustomRoles\Office2019\HostStart.ps1" />
+      </Component>
+      <Component Id="cmpD1B147C179BA4890BBE4DC354DABFCBE" Directory="dirDCF05B8A2D444B60B8AC412CE687FC66" Guid="bc18385a-bccc-4b0b-87ab-fe73514c052f">
+        <File Id="fil1EB0F286319041778CC4F589DB9D89D6" Source="$(var.SolutionDir)\LabSources\CustomRoles\PowerShellWebAccess\HostStart.ps1" />
+      </Component>
+      <Component Id="cmp31B7386BE61E4CBC87B547A4223A7FA3" Directory="dir81AC7AA67CD84A6B9CBA05139A977B45" Guid="4339a451-190b-4ff0-9e30-1bed0acee283">
+        <File Id="filE55F655A00EA4CC490F8A54BF44BFA49" Source="$(var.SolutionDir)\LabSources\CustomRoles\ProGet5\HostStart.ps1" />
+        <File Id="filE256ED55FB34497690F40A3DFD18B4F8" Source="$(var.SolutionDir)\LabSources\CustomRoles\ProGet5\README.md" />
+      </Component>
+      <Component Id="cmp86C615E77FDE477B92A7924F45BA8D9B" Directory="dirD5857EAD5CA449FAA8DEB6655159C72F" Guid="078973d4-58d5-4f5f-b0b2-e246feae64d6">
+        <File Id="filFAB673E653D046F3ADC67F2DCB2E2FAE" Source="$(var.SolutionDir)\LabSources\CustomRoles\SCCM\HostStart.ps1" />
+        <File Id="fil27651624415947528BC5DB9144162BF3" Source="$(var.SolutionDir)\LabSources\CustomRoles\SCCM\README.md" />
+        <File Id="fil182CF76CCEC748E9B6A6D4723CFE7623" Source="$(var.SolutionDir)\LabSources\CustomRoles\SCCM\DownloadAdk.ps1" />
+        <File Id="fil342BDDCDD4734ECC9B26FD76634CA36D" Source="$(var.SolutionDir)\LabSources\CustomRoles\SCCM\DownloadSCCM.ps1" />
+        <File Id="fil566509688A384CCDA6EB4A512EBB9BA4" Source="$(var.SolutionDir)\LabSources\CustomRoles\SCCM\InstallSCCM.ps1" />
+      </Component>
+      <Component Id="cmp31E714FCC0CE42BB89D1E9EDDAFFEF64" Directory="dir1ED29293F8F64AE8983DE482FEC3A5EB" Guid="f20c6f66-1909-4bb2-9603-bb466c19a0ad">
+        <File Id="filC97331127C04463994C815D992DFF5BC" Source="$(var.SolutionDir)\LabSources\CustomRoles\WindowsAdminCenter\HostStart.ps1" />
+      </Component>
+      <Component Id="cmpAC53BE1435E54EA2B6C138AC6F7B4D01" Directory="dirB373F64E5AF4425A852A91AF628C1053" Guid="bc9fb53b-c471-41bf-b74c-0319b4320284">
+        <File Id="fil611A290B504B40AC8067CF36E9A1FE16" KeyPath="yes" Source="$(var.SolutionDir)\LabSources\CustomRoles\DemoCustomRole\DemoCustomRole.ps1" />
+        <File Id="filBE11AC3DC999442C9450DAD98FF51265" Source="$(var.SolutionDir)\LabSources\CustomRoles\DemoCustomRole\HostEnd.ps1" />
+        <File Id="filF8132E52FC96455F841EC3746134B102" Source="$(var.SolutionDir)\LabSources\CustomRoles\DemoCustomRole\HostStart.ps1" />
+      </Component>
+      <Component Id="cmp8F7BE807FC9E40ED95E7DA6CA287F02F" Directory="dir52A8F28BEFFB4F02812378EA14E93873" Guid="3dea0f7f-f575-4e36-89a4-d859d8bba949">
+        <File Id="fil9380E297728F4F10B03B072755AE8F0F" Source="$(var.SolutionDir)\LabSources\CustomRoles\Exchange2019\HostStart.ps1" />
+      </Component>
+      <Component Id="cmpB7A4553235714D3980022AD29B59E524" Directory="dirD153285282514AC29784E8EEC0425DF4" Guid="6fac1fe1-56ef-4bd6-9126-4350e63d9a44">
+        <File Id="filF56497E6FC8F489F817C687FC78899BB" Source="$(var.SolutionDir)\LabSources\CustomRoles\Exchange2016\HostStart.ps1" />
+      </Component>
+      <Component Id="cmpAC7C8B81D23F4769994947F0CECD3180" Directory="dir0E259F3D4465478A9ACD45BFE861109E" Guid="17bdbdfb-799d-48a7-b8aa-bb70463492af">
+        <File Id="fil0ECB36EBB468421ABD44DCA1F37CC377" Source="$(var.SolutionDir)\LabSources\CustomRoles\Exchange2013\HostStart.ps1" />
+      </Component>
+      <Component Id="cmpCFDA434FE2294C39A01B1A9F6DC59529" Directory="dirA53F69F85E224F84873C47FAFD3B88BB" Guid="015a25fd-f85e-4185-8fe7-09b05cb32d9b">
+        <File Id="filDC4663A87BBC486D96836D3BB0F4F246" Source="$(var.SolutionDir)\LabSources\CustomRoles\LabBuilder\HostStart.ps1" />
+        <File Id="filD6FFEA4ABA0A491CB12286E6300C694D" Source="$(var.SolutionDir)\LabSources\CustomRoles\LabBuilder\server.ps1" />
+      </Component>
+      <Component Id="cmpD43AC3ADCAC343318238CE837A8511FD" Directory="dirC36E8B7EEDBFAC7EC8246E888318E976" Guid="8f1d61d4-524e-480a-bced-3808ee1464d7">
+        <File Id="fil322C12274D5FA443820293B774FB33F8" KeyPath="yes" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\HostStart.ps1" />
+        <File Id="filF77493252C6F22FB641A5F9F46E6B2B9" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\README.md" />
+      </Component>
+      <Component Id="cmpD872D51591D5FB0B8C3BBB4DA137154C" Directory="dirE0E05B89294CA38FA97EE7238D9CEFB1" Guid="97dedffc-f055-4f9a-9ceb-002343c051e2">
+        <File Id="fil5AF4A22C0693A040E9DE14A3EBED7B0E" KeyPath="yes" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\AutomatedLab.Feed\AutomatedLab.Feed.sln" />
+      </Component>
+      <Component Id="cmp327619CD4BA2431DB598B336998F1D12" Directory="dirCDCBE3521717CF93DD16CF0E85E9CA95" Guid="a3c6cf44-a3c9-4796-a47f-c498debcf613">
+        <File Id="filF82C6BB38D2FCC6CF1C0338C789B766E" KeyPath="yes" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\AutomatedLab.Feed\AutomatedLab.Feed\AutomatedLab.Feed.csproj" />
+        <File Id="fil14F979CCDFC9B2BD6BBBD1641AB73646" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\AutomatedLab.Feed\AutomatedLab.Feed\Default.aspx" />
+        <File Id="fil41659F25C700C70685B10C8D56CC33A0" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\AutomatedLab.Feed\AutomatedLab.Feed\favicon.ico" />
+        <File Id="filFFEECD18D40560A08082A3F38E812EC9" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\AutomatedLab.Feed\AutomatedLab.Feed\packages.config" />
+        <File Id="filA19C280B694FB4CF37D9905A1E4057EC" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\AutomatedLab.Feed\AutomatedLab.Feed\Web.config" />
+        <File Id="filA03A5C9A7ECE6C135C8CD75EE5827868" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\AutomatedLab.Feed\AutomatedLab.Feed\Web.Debug.config" />
+        <File Id="filDAEDF51BE5B607EF4EABD7183016AA3B" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\AutomatedLab.Feed\AutomatedLab.Feed\Web.Release.config" />
+      </Component>
+      <Component Id="cmp4C0668DF823CF3E5E6F46753AE2BE3AE" Directory="dir85107A923E48585C84908A44D8030BDA" Guid="89b0502c-57f9-48b2-96b1-2a2802c4d679">
+        <File Id="filA687D3B6D178462463BD5E9B48258B5E" KeyPath="yes" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\AutomatedLab.Feed\AutomatedLab.Feed\App_Start\NuGetODataConfig.cs" />
+      </Component>
+      <Component Id="cmpE1D1F7B6655F9C8D9AC0C78E4E3F1F4E" Directory="dir37A7CF04B48DB69F87A6514A85648236" Guid="e4b17625-38a8-4872-9579-722da696a184">
+        <File Id="fil9AE92A7EF2B1A3E06965B6A4D663E339" KeyPath="yes" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\AutomatedLab.Feed\AutomatedLab.Feed\Properties\AssemblyInfo.cs" />
+      </Component>
+      <Component Id="cmp55A4B4849ADAD1E107A71AE5AD5EEDA4" Directory="dir28B0084D421216FE92CC8481619C69AA" Guid="1fd6b425-5ba1-4e7e-8a49-fb551c6aad0c">
+        <File Id="filA102335A502A3E7D04406D84B6DF446A" KeyPath="yes" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\AutomatedLab.Feed\AutomatedLab.Feed\Properties\PublishProfiles\FolderProfile.pubxml" />
+      </Component>
+      <Component Id="cmp20B7D2D236DBF09970560D12CAFA69FD" Directory="dirC68FB245828A689F597C7A6D695D1CF4" Guid="9644f8fe-4a96-4118-8bc3-32153a6f0cf3">
+        <File Id="filA597349DB2E9214D7D33BF7FFBAAE6AD" KeyPath="yes" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\.build\build.ps1" />
+        <File Id="filE5D833DE08B62A029E5E9084F9247DF6" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\.build\deploy.ps1" />
+        <File Id="fil98F247E6FBA601F10470F2113A138274" Source="$(var.SolutionDir)\LabSources\CustomRoles\NuGetServer\.build\test.ps1" />
+      </Component>
+      <Component Id="cmp671B69F8154634FF36C34DD79C618D70" Directory="dir0C2344C28DDF2BE515A2EB1362D4BFC7" Guid="d3bc68d7-829e-42b5-a824-5835344c665a">
+        <File Id="filA3AE6B6873238B3E226A641C43640923" KeyPath="yes" Source="$(var.SolutionDir)LabSources\ISOs\README.md" />
+      </Component>
+      <Component Id="cmp590D2D7C56C54DA055DDE83528B57C13" Directory="dir89E871A710737F4B22546DECEF191B40" Guid="2cbfb439-2a97-4810-89e4-84f4ec7497bc">
+        <File Id="filF31E07CB8C65D89C7254CA55B09CE11B" KeyPath="yes" Source="$(var.SolutionDir)LabSources\OSUpdates\README.md" />
+      </Component>
+      <Component Id="cmp43B76600451B8D628D7EC64CFA049626" Directory="dirB2ACA9410CDB950E0A607387A4CEAC01" Guid="88b83189-2a22-46fb-b6a5-10edb6d8553a">
+        <File Id="filCE5BBBA18864DFAB2341D02FC3EE5F99" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\README.md" />
+      </Component>
+      <Component Id="cmpE162BBFF409B8CC73F5745943C9F78AD" Directory="dirBA4353D3575F96F525324853C216E37A" Guid="32219f4c-9fee-45b7-8f36-85ddf1ee87ae">
+        <File Id="fil97CB0342FDAB6F8D84B78029E5B82B8E" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\DnsAndTrustSetup\DnsAndTrustSetup.ps1" />
+      </Component>
+      <Component Id="cmp807FDEB28168B8D0318E2208A4652140" Directory="dirFB8F46DAE95D4FEE6AAF25E7B7E68B1D" Guid="1fc5494d-db16-4e54-b560-87aa4e66c165">
+        <File Id="fil3768C45B910051D0DD8B6B1E5B587935" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\DotNet35Client\DotNet35Client.ps1" />
+      </Component>
+      <Component Id="cmpB193B2B326BB852924DAB2B86F30C9AA" Directory="dirA63905768963FE92C75427CB0FE07A7B" Guid="1ae1b65c-ebe2-4cbe-a796-110ae4341fd9">
+        <File Id="filFA02968727403FF1B8C702C41CEC8005" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\PrepareFirstChildDomain\LabUsers.txt" />
+      </Component>
+      <Component Id="cmpA5664FF12ACC73D5346CC08990DB6435" Directory="dirA63905768963FE92C75427CB0FE07A7B" Guid="556ac2e8-4cab-4017-ae22-24e9ed5bf308">
+        <File Id="fil5E6BBD7AFA9AF74057D3658038C196A0" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\PrepareFirstChildDomain\New-ADLabAccounts 2.0.ps1" />
+      </Component>
+      <Component Id="cmp27D410847F88DBF89BA60A49C07FD89D" Directory="dir748E276A50118FBDB70F5F2F1C60FEFD" Guid="140493eb-d17e-497f-bcd4-c85db98076c7">
+        <File Id="filB9DE523E962A2A7EA7064EADDF42C324" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\PrepareRootDomain\PrepareRootDomain.ps1" />
+      </Component>
+      <Component Id="cmp572E7781C050E8F17197616868AF8483" Directory="dir748E276A50118FBDB70F5F2F1C60FEFD" Guid="c9dbdf0e-5a39-4db7-a04b-4c3fade2b061">
+        <File Id="filBF9DD3E8C0FEB088368544BEBFDA5241" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\PrepareRootDomain\RepAll.bat" />
+      </Component>
+      <Component Id="cmp1653DBBC51F93966487491C2D7E535A1" Directory="dir748E276A50118FBDB70F5F2F1C60FEFD" Guid="f56f4402-571b-4ce7-a045-3085c22a8e94">
+        <File Id="filCFCBA185E13EE33701230CB04C938202" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\PrepareRootDomain\Sites.txt" />
+      </Component>
+      <Component Id="cmp68327B1E847CA60D18E44BD1A2EE82BD" Directory="dir748E276A50118FBDB70F5F2F1C60FEFD" Guid="19c1deba-deba-4cca-8be9-5bf9a1e0c6a0">
+        <File Id="fil285B4BBCAFFD7B516D7124DEF2883049" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\PrepareRootDomain\Subnets.txt" />
+      </Component>
+      <Component Id="cmp26C0482860694A5D77DCD33746087215" Directory="dir748E276A50118FBDB70F5F2F1C60FEFD" Guid="502e73c8-43a2-46ff-9ef2-3d3d4c251956">
+        <File Id="fil248030669FCE47E3625A37688AECB3C3" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\PrepareRootDomain\users.csv" />
+      </Component>
+      <Component Id="cmpE26210C325B965F52FCEC796635C60D5" Directory="dir2EE33670E132C988264FB3374812BBCE" Guid="c349b85f-7174-4ac7-903b-03dc11528128">
+        <File Id="fil6FFF71E4740D84EBF787101D499B4999" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\SetupDscClients\SetupDscClients.ps1" />
+      </Component>
+      <Component Id="cmpEE9203318723FF8F2B8640D69426EC11" Directory="dir643614AA5DD514F0CDE7FCAD4C22D6D2" Guid="677b0584-53dd-455a-ab6c-8496d2d21f6d">
+        <File Id="filDD63F634D84FF08A27B4324841E0A117" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\SetupDscPullServer\CreateDscSqlDatabase.ps1" />
+      </Component>
+      <Component Id="cmpB85FA2BD096943C488D20B6762C074F1" Directory="dir643614AA5DD514F0CDE7FCAD4C22D6D2" Guid="864324e4-06a4-460e-a5f3-abe69bc20e2d">
+        <File Id="fil1C8824BF1D24203C55144DD3D8E8F975" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\SetupDscPullServer\Devices.mdb" />
+      </Component>
+      <Component Id="cmp3DB102DDB4E8933CB7CA8F10E690C53B" Directory="dir643614AA5DD514F0CDE7FCAD4C22D6D2" Guid="10eb84f3-9d21-4b1b-aed7-257c934dcb61">
+        <File Id="filA64366873E8C3F31B46E5DE0AA1EB499" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\SetupDscPullServer\DSC Dashboard.pbix" />
+      </Component>
+      <Component Id="cmp50A7D124DC8D85FD036A3927455C8230" Directory="dir643614AA5DD514F0CDE7FCAD4C22D6D2" Guid="93caa70c-6cfe-4e0f-a391-e4b79c0c8aa8">
+        <File Id="filA31276FA1BBC72CB111A51948F29C1CE" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\SetupDscPullServer\DscTestConfig.ps1" />
+      </Component>
+      <Component Id="cmp5BA4E0BA3769D59601C1AC2971C0ABA9" Directory="dir643614AA5DD514F0CDE7FCAD4C22D6D2" Guid="56364c6e-9885-45a1-bea9-095f0a5c2b79">
+        <File Id="fil5154ECA491181D426A43B5F0696F2D5F" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\SetupDscPullServer\SetupDscPullServerEdb.ps1" />
+      </Component>
+      <Component Id="cmpB9F44D1BE872FB3C577FB59AA1C15BD1" Directory="dir643614AA5DD514F0CDE7FCAD4C22D6D2" Guid="bd3b858a-8261-4151-991e-705a6cc05c6f">
+        <File Id="fil19D047322B9B206322C414F06B9749C2" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\SetupDscPullServer\SetupDscPullServerMdb.ps1" />
+      </Component>
+      <Component Id="cmpB3EF7A92492F44029D4B8C1E55123D8D" Directory="dir643614AA5DD514F0CDE7FCAD4C22D6D2" Guid="a8b0ef18-d142-487b-91fd-d7e3cda088e0">
+        <File Id="filA66AB3CD20094F17811461E2914765DC" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\SetupDscPullServer\SetupDscPullServerSql.ps1" />
+      </Component>
+      <Component Id="cmpDE17B245EA354D77BC40DB5B0F43CDDA" Directory="dir00729354D694424EA958809C47C9B720" Guid="e38f28c3-3de3-42a2-81ff-afe83e6f85aa">
+        <File Id="fil1492CDCF9CBB34982996FAA477019FB10" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\SqlServer\SetupSqlServerReportingServices.ps1" />
+      </Component>
+      <Component Id="cmp409218040CF648ED926382E690CB15C8" Directory="dirE842539784E045D999747314891FC4E7" Guid="82a26abf-2b33-415b-90fb-fdc06501a1db">
+        <File Id="filF716E14FD1EA46BDA54D9A76E3EEA053" KeyPath="yes" Source="$(var.SolutionDir)LabSources\PostInstallationActivities\WebSiteDefaultContent\Default.html" />
+      </Component>
+      <Component Id="cmp8D2B8A64166C91132F0DBC3F643D114D" Directory="dir311D91D38903AE9026EBF00ADD6C4410" Guid="3271d103-ca0c-4248-9212-c590748d99c0">
+        <File Id="fil955A23ABDD5E709E04D314B16F498600" KeyPath="yes" Source="$(var.SolutionDir)LabSources\SoftwarePackages\README.md" />
+      </Component>
+      <Component Id="cmp0A8492B227C5BF123BBE55C2C9575F74" Directory="dirE5BE5518051AF65ED41BF5D6ED532027" Guid="22848e70-1f5b-431d-b03e-c1e9ac076c6e">
+        <File Id="fil314088D0AFFAA91499CB31DE7F672422" KeyPath="yes" Source="$(var.SolutionDir)LabSources\Tools\oscdimg.exe" />
+      </Component>
+      <Component Id="cmp7FD43B34EF04450D0C411ED00C384154" Directory="dirE5BE5518051AF65ED41BF5D6ED532027" Guid="e5a528f1-7a9e-4426-893e-6aab5d633b8e">
+        <File Id="fil91A42F784C9D2E9445F021CE9F1F2D7F" KeyPath="yes" Source="$(var.SolutionDir)LabSources\Tools\RepAll.bat" />
+      </Component>
+      <Component Id="cmp812EEFC5976F1877DCCECB37C5C9A325" Directory="dirE5BE5518051AF65ED41BF5D6ED532027" Guid="50a89d7e-1652-4c04-b057-40072be6bf2c">
+        <File Id="filAE4B1BCB18D14AFD2FC9B29DB9564210" KeyPath="yes" Source="$(var.SolutionDir)LabSources\Tools\WinSAT.exe" />
+      </Component>
+      <Component Id="cmp0CCB7565672BEADF4BE9BF6834BC5A32" Directory="dirE5BE5518051AF65ED41BF5D6ED532027" Guid="98258ecf-60ad-43fb-aec5-f1c5f3310c72">
+        <File Id="filBC151B15E628F832478D42E89BA3B0B0" KeyPath="yes" Source="$(var.SolutionDir)LabSources\Tools\WinSATAPI.dll" />
+      </Component>
+      <Component Id="cmpB9D89FA06C3A5093BFBA8D6765A911E5" Directory="dirE5BE5518051AF65ED41BF5D6ED532027" Guid="af868421-3e89-4b3f-bb8f-33388a580104">
+        <File Id="filC2BE05767D118750F071E69ADCEE9D4A" KeyPath="yes" Source="$(var.SolutionDir)LabSources\Tools\README.md" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="LABSOURCESDIR">
+      <Directory Id="dir0C2344C28DDF2BE515A2EB1362D4BFC7" Name="ISOs" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirB2ACA9410CDB950E0A607387A4CEAC01">
+      <Directory Id="dir2EE33670E132C988264FB3374812BBCE" Name="SetupDscClients" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="LABSOURCESDIR">
+      <Directory Id="dir311D91D38903AE9026EBF00ADD6C4410" Name="SoftwarePackages" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirB2ACA9410CDB950E0A607387A4CEAC01">
+      <Directory Id="dir643614AA5DD514F0CDE7FCAD4C22D6D2" Name="SetupDscPullServer" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirB2ACA9410CDB950E0A607387A4CEAC01">
+      <Directory Id="dir00729354D694424EA958809C47C9B720" Name="SqlServer" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirB2ACA9410CDB950E0A607387A4CEAC01">
+      <Directory Id="dir748E276A50118FBDB70F5F2F1C60FEFD" Name="PrepareRootDomain" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirB2ACA9410CDB950E0A607387A4CEAC01">
+      <Directory Id="dirE842539784E045D999747314891FC4E7" Name="WebSiteDefaultContent" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="LABSOURCESDIR">
+      <Directory Id="dir89E871A710737F4B22546DECEF191B40" Name="OSUpdates" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirB2ACA9410CDB950E0A607387A4CEAC01">
+      <Directory Id="dirA63905768963FE92C75427CB0FE07A7B" Name="PrepareFirstChildDomain" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="LABSOURCESDIR">
+      <Directory Id="dirB2ACA9410CDB950E0A607387A4CEAC01" Name="PostInstallationActivities" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirB2ACA9410CDB950E0A607387A4CEAC01">
+      <Directory Id="dirBA4353D3575F96F525324853C216E37A" Name="DnsAndTrustSetup" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="LABSOURCESDIR">
+      <Directory Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39" Name="CustomRoles" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dirB373F64E5AF4425A852A91AF628C1053" Name="DemoCustomRole" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dirE5932629FB4A45BB8ABFA79A78890A04" Name="CM-1902" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dir141892B23C7E4AD281B7868E9429C03A" Name="CM-2002" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dirD74EDE5ACE9244AAAAA4BC50F8AA8BD23" Name="CM-2103" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dirD49C097A947F489194CAACFE550AC9C2" Name="MDT" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dir173133541A464C18AA07E8E6F6862181" Name="Office2019" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dirDCF05B8A2D444B60B8AC412CE687FC66" Name="PowerShellWebAccess" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dir81AC7AA67CD84A6B9CBA05139A977B45" Name="ProGet5" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dir0E259F3D4465478A9ACD45BFE861109E" Name="Exchange2013" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dirD153285282514AC29784E8EEC0425DF4" Name="Exchange2016" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dir52A8F28BEFFB4F02812378EA14E93873" Name="Exchange2019" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dirA53F69F85E224F84873C47FAFD3B88BB" Name="LabBuilder" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dirD5857EAD5CA449FAA8DEB6655159C72F" Name="SCCM" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dir1ED29293F8F64AE8983DE482FEC3A5EB" Name="WindowsAdminCenter" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="LABSOURCESDIR">
+      <Directory Id="dirE5BE5518051AF65ED41BF5D6ED532027" Name="Tools" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirB2ACA9410CDB950E0A607387A4CEAC01">
+      <Directory Id="dirFB8F46DAE95D4FEE6AAF25E7B7E68B1D" Name="DotNet35Client" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE3A2F6A6AFF66E7DBE85D5202BCC2B39">
+      <Directory Id="dirC36E8B7EEDBFAC7EC8246E888318E976" Name="NuGetServer" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dir37A7CF04B48DB69F87A6514A85648236">
+      <Directory Id="dir28B0084D421216FE92CC8481619C69AA" Name="PublishProfiles" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirCDCBE3521717CF93DD16CF0E85E9CA95">
+      <Directory Id="dir37A7CF04B48DB69F87A6514A85648236" Name="Properties" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirCDCBE3521717CF93DD16CF0E85E9CA95">
+      <Directory Id="dir85107A923E48585C84908A44D8030BDA" Name="App_Start" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirC36E8B7EEDBFAC7EC8246E888318E976">
+      <Directory Id="dirC68FB245828A689F597C7A6D695D1CF4" Name=".build" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirE0E05B89294CA38FA97EE7238D9CEFB1">
+      <Directory Id="dirCDCBE3521717CF93DD16CF0E85E9CA95" Name="AutomatedLab.Feed" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="dirC36E8B7EEDBFAC7EC8246E888318E976">
+      <Directory Id="dirE0E05B89294CA38FA97EE7238D9CEFB1" Name="AutomatedLab.Feed" />
+    </DirectoryRef>
+  </Fragment>
+</Wix>
+<!--
+.\heat dir 'C:\VS\automatedlab\AutomatedLab-3.7\LabSources' -cg LabSources -out d:\LabSources.wxs
+
+Get-Content D:\LabSources.wxs | ForEach-Object { if ($_ -like '*PUT-GUID-HERE*') { $_ -replace 'PUT-GUID-HERE', [guid]::NewGuid() } else { $_ } } | Out-File D:\LabSourcesWithGUIDs.wxs
+
+Commands to create the command in the project's pre-build that creates the file Includes.wxi:
+Base64 encoding is required due to escaping madness
+$string = '
+$version = (Find-Module -Name AutomatedLab.Common -ErrorAction SilentlyContinue).Version;
+if (-not $version)
+{
+    $version = (Select-String -Path .\AutomatedLab.Common\AutomatedLab.Common.psd1 -Pattern "(ModuleVersion([ =]+))('')(?<Version>\d{1,2}\.\d{1,2}\.\d{1,2})").Matches[0].Groups["Version"].Value
+}
+Write-Host "Version of AutomatedLab.Common is ''$version''"
+(''<?xml version="1.0" encoding="utf-8"?><Include Id="VersionNumberInclude"><?define AutomatedLabCommonVersion="{0}" ?></Include>'' -f $version) | Out-File -FilePath ..\Installer\Includes.wxi -Encoding UTF8;
+(Get-Content -Path .\AutomatedLab.Common\AutomatedLab.Common.psd1 -Raw) -replace "(ModuleVersion([ =]+))('')(?<Version>\d{1,2}\.\d{1,2}\.\d{1,2})", "`$1''$version" | Out-File -FilePath .\AutomatedLab.Common\AutomatedLab.Common.psd1
+'
+$bytes = [System.Text.encoding]::Unicode.GetBytes($string)
+$base64 = [System.Convert]::ToBase64String($bytes)
+$base64 | clip
+
+PowerShell -Command "& { `$sb = [scriptblock]::Create([System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('DQAKACQAdgBlAHIAcwBpAG8AbgAgAD0AIAAoAEYAaQBuAGQALQBNAG8AZAB1AGwAZQAgAC0ATgBhAG0AZQAgAEEAdQB0AG8AbQBhAHQAZQBkAEwAYQBiAC4AQwBvAG0AbQBvAG4AKQAuAFYAZQByAHMAaQBvAG4AOwANAAoAKAAnADwAPwB4AG0AbAAgAHYAZQByAHMAaQBvAG4APQAiADEALgAwACIAIABlAG4AYwBvAGQAaQBuAGcAPQAiAHUAdABmAC0AOAAiAD8APgA8AEkAbgBjAGwAdQBkAGUAIABJAGQAPQAiAFYAZQByAHMAaQBvAG4ATgB1AG0AYgBlAHIASQBuAGMAbAB1AGQAZQAiAD4APAA/AGQAZQBmAGkAbgBlACAAQQB1AHQAbwBtAGEAdABlAGQATABhAGIAQwBvAG0AbQBvAG4AVgBlAHIAcwBpAG8AbgA9ACIAewAwAH0AIgAgAD8APgA8AC8ASQBuAGMAbAB1AGQAZQA+ACcAIAAtAGYAIAAkAHYAZQByAHMAaQBvAG4AKQAgAHwAIABPAHUAdAAtAEYAaQBsAGUAIAAtAEYAaQBsAGUAUABhAHQAaAAgAC4ALgBcAEkAbgBzAHQAYQBsAGwAZQByAFwASQBuAGMAbAB1AGQAZQBzAC4AdwB4AGkAIAAtAEUAbgBjAG8AZABpAG4AZwAgAFUAVABGADgAOwANAAoAKABHAGUAdAAtAEMAbwBuAHQAZQBuAHQAIAAtAFAAYQB0AGgAIAAuAFwAQQB1AHQAbwBtAGEAdABlAGQATABhAGIALgBDAG8AbQBtAG8AbgBcAEEAdQB0AG8AbQBhAHQAZQBkAEwAYQBiAC4AQwBvAG0AbQBvAG4ALgBwAHMAZAAxACAALQBSAGEAdwApACAALQByAGUAcABsAGEAYwBlACAAIgAoAE0AbwBkAHUAbABlAFYAZQByAHMAaQBvAG4AKABbACAAPQBdACsAKQApACgAJwApACgAPwA8AFYAZQByAHMAaQBvAG4APgBcAGQAewAxACwAMgB9AFwALgBcAGQAewAxACwAMgB9AFwALgBcAGQAewAxACwAMgB9ACkAIgAsACAAIgBgACQAMQAnACQAdgBlAHIAcwBpAG8AbgAiACAAfAAgAE8AdQB0AC0ARgBpAGwAZQAgAC0ARgBpAGwAZQBQAGEAdABoACAALgBcAEEAdQB0AG8AbQBhAHQAZQBkAEwAYQBiAC4AQwBvAG0AbQBvAG4AXABBAHUAdABvAG0AYQB0AGUAZABMAGEAYgAuAEMAbwBtAG0AbwBuAC4AcABzAGQAMQANAAoA'))); &`$sb }"
+-->
